@@ -1,0 +1,40 @@
+{
+  "mcp_servers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-playwright"],
+      "env": {
+        "BROWSER": "chromium"
+      }
+    },
+    "database": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-postgres"],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "${DATABASE_URL}"
+      }
+    },
+    "git": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-git"],
+      "env": {
+        "GIT_REPO_PATH": "."
+      }
+    },
+    "internal-api": {
+      "command": "node",
+      "args": [".cursor/mcp/servers/internal-api-server.js"],
+      "env": {
+        "API_BASE_URL": "http://localhost:8000"
+      }
+    },
+    "monitoring": {
+      "command": "node",
+      "args": [".cursor/mcp/servers/monitoring-server.js"],
+      "env": {
+        "PROMETHEUS_URL": "http://localhost:9090",
+        "GRAFANA_URL": "http://localhost:3001"
+      }
+    }
+  }
+}

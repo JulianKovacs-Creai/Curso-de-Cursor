@@ -1,0 +1,47 @@
+{
+  "bugbot": {
+    "enabled": true,
+    "trigger_on": ["pull_request_opened", "pull_request_synchronize"],
+    "review_depth": "comprehensive",
+    
+    "analysis_capabilities": {
+      "syntax_analysis": true,
+      "semantic_analysis": true,
+      "security_scanning": true,
+      "performance_analysis": true,
+      "architecture_compliance": true,
+      "test_coverage_analysis": true
+    },
+    
+    "review_categories": {
+      "bugs": {
+        "enabled": true,
+        "severity_threshold": "medium",
+        "auto_fix_suggestions": true
+      },
+      "security": {
+        "enabled": true,
+        "severity_threshold": "low",
+        "block_merge_on": "high"
+      },
+      "performance": {
+        "enabled": true,
+        "regression_detection": true,
+        "benchmark_comparison": true
+      }
+    },
+    
+    "integration": {
+      "github": {
+        "create_review_comments": true,
+        "request_changes_on_critical": true,
+        "approve_when_clean": false,
+        "add_labels": true
+      },
+      "slack": {
+        "notify_on_critical_issues": true,
+        "channel": "#code-review"
+      }
+    }
+  }
+}
