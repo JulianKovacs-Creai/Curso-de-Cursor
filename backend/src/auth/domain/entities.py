@@ -4,7 +4,22 @@ Auth Domain Entities
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
+from enum import Enum
 from .value_objects import UserId, Email
+
+class UserRole(Enum):
+    """User roles enumeration"""
+    ADMIN = "admin"
+    USER = "user"
+    MODERATOR = "moderator"
+    GUEST = "guest"
+
+class UserStatus(Enum):
+    """User status enumeration"""
+    ACTIVE = "active"
+    INACTIVE = "inactive"
+    PENDING = "pending"
+    SUSPENDED = "suspended"
 
 @dataclass
 class User:
@@ -14,6 +29,8 @@ class User:
     hashed_password: str
     first_name: Optional[str] = None
     last_name: Optional[str] = None
+    role: UserRole = UserRole.USER
+    status: UserStatus = UserStatus.ACTIVE
     is_active: bool = True
     is_verified: bool = False
     created_at: Optional[datetime] = None

@@ -32,3 +32,64 @@ class Email:
         
         if len(self.value) > 254:
             raise ValueError("Email is too long")
+
+@dataclass(frozen=True)
+class JWTToken:
+    """JWT Token value object"""
+    value: str
+    
+    def __post_init__(self):
+        if not self.value:
+            raise ValueError("JWT Token cannot be empty")
+        if len(self.value) < 10:
+            raise ValueError("JWT Token is too short")
+
+@dataclass(frozen=True)
+class RefreshToken:
+    """Refresh Token value object"""
+    value: str
+    
+    def __post_init__(self):
+        if not self.value:
+            raise ValueError("Refresh Token cannot be empty")
+        if len(self.value) < 10:
+            raise ValueError("Refresh Token is too short")
+
+@dataclass(frozen=True)
+class Password:
+    """Password value object"""
+    value: str
+    
+    def __post_init__(self):
+        if not self.value:
+            raise ValueError("Password cannot be empty")
+        if len(self.value) < 8:
+            raise ValueError("Password must be at least 8 characters long")
+        if len(self.value) > 128:
+            raise ValueError("Password is too long")
+
+@dataclass(frozen=True)
+class FirstName:
+    """First Name value object"""
+    value: str
+    
+    def __post_init__(self):
+        if not self.value:
+            raise ValueError("First name cannot be empty")
+        if len(self.value) < 2:
+            raise ValueError("First name must be at least 2 characters long")
+        if len(self.value) > 50:
+            raise ValueError("First name is too long")
+
+@dataclass(frozen=True)
+class LastName:
+    """Last Name value object"""
+    value: str
+    
+    def __post_init__(self):
+        if not self.value:
+            raise ValueError("Last name cannot be empty")
+        if len(self.value) < 2:
+            raise ValueError("Last name must be at least 2 characters long")
+        if len(self.value) > 50:
+            raise ValueError("Last name is too long")

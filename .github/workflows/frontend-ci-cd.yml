@@ -19,28 +19,31 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '18'
-        cache: 'npm'
-        cache-dependency-path: frontend/package-lock.json
+        cache: 'pnpm'
+        cache-dependency-path: frontend/pnpm-lock.yaml
+    
+    - name: Install pnpm
+      run: npm install -g pnpm
     
     - name: Install dependencies
       run: |
         cd frontend
-        npm ci
+        pnpm install
     
     - name: Run linting
       run: |
         cd frontend
-        npm run lint
+        pnpm run lint
     
     - name: Run tests
       run: |
         cd frontend
-        npm run test:ci
+        pnpm run test:ci
     
     - name: Build application
       run: |
         cd frontend
-        npm run build
+        pnpm run build
 
   lighthouse:
     runs-on: ubuntu-latest
@@ -54,10 +57,13 @@ jobs:
       with:
         node-version: '18'
     
+    - name: Install pnpm
+      run: npm install -g pnpm
+    
     - name: Install dependencies
       run: |
         cd frontend
-        npm ci
+        pnpm install
         npm run build
     
     - name: Run Lighthouse CI
