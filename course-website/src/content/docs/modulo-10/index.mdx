@@ -1,0 +1,482 @@
+---
+title: "Módulo 10: Testing Automatizado con Cursor AI"
+description: "Domina la creación de suites completas de testing usando Cursor AI para garantizar calidad y confiabilidad en tus aplicaciones."
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Objetivos de Aprendizaje
+
+Al finalizar este módulo, serás capaz de:
+
+1. **Configurar entornos de testing** completos con herramientas modernas para frontend y backend
+2. **Generar tests automáticamente** usando prompts efectivos y técnicas avanzadas de Cursor AI
+3. **Implementar testing unitario robusto** con alta cobertura para componentes y funciones críticas
+4. **Desarrollar tests de integración** con mocks apropiados y validación de interacciones entre módulos
+5. **Crear suites de testing E2E** completas usando Cypress y Playwright para flujos críticos
+6. **Automatizar testing en CI/CD** con pipelines de GitHub Actions para calidad continua
+
+## 📹 Videos del Módulo
+
+### 🎯 Video Principal: Testing Automatizado
+
+Crea suites completas de testing usando Cursor AI para máxima cobertura.
+
+<iframe 
+  width="100%" 
+  height="400" 
+  src="https://www.youtube.com/embed/ZfQTJ3zdH6w" 
+  title="Testing Automatizado con Cursor AI" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  allowfullscreen
+  style="border-radius: 8px; margin: 1rem 0;">
+</iframe>
+
+### 🛠️ Video Complementario: Testing Avanzado (Short)
+
+Tips rápidos para testing avanzado con Cursor AI.
+
+<iframe 
+  width="100%" 
+  height="400" 
+  src="https://www.youtube.com/embed/vkvv1erxdME" 
+  title="Tips de Testing Avanzado" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  allowfullscreen
+  style="border-radius: 8px; margin: 1rem 0;">
+</iframe>
+
+### 🚀 Video Avanzado: Test Coverage y CI/CD
+
+Integración de testing con pipelines de CI/CD y coverage automation.
+
+<iframe 
+  width="100%" 
+  height="400" 
+  src="https://www.youtube.com/embed/I3f0h1Anqe0" 
+  title="Test Coverage y CI/CD Integration" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  allowfullscreen
+  style="border-radius: 8px; margin: 1rem 0;">
+</iframe>
+
+<CardGrid>
+  <Card title="Testing Unitario" icon="test-tube">
+    Pruebas de componentes individuales con alta cobertura
+  </Card>
+  <Card title="Testing de Integración" icon="puzzle">
+    Validación de interacciones entre módulos
+  </Card>
+  <Card title="Testing E2E" icon="laptop">
+    Pruebas completas de flujos de usuario
+  </Card>
+  <Card title="Automatización CI/CD" icon="rocket">
+    Integración continua con pipelines automatizados
+  </Card>
+</CardGrid>
+
+## Introducción al Testing Automatizado
+
+El testing automatizado es fundamental para garantizar la calidad del código y la confiabilidad de las aplicaciones. Cursor AI puede asistir significativamente en la creación y mantenimiento de pruebas automatizadas.
+
+### Importancia del Testing
+
+- **Calidad del código**: Detectar errores tempranamente
+- **Mantenibilidad**: Facilitar refactoring seguro
+- **Documentación**: Los tests sirven como documentación viva
+- **Confianza**: Permitir despliegues seguros
+
+### Tipos de Testing
+
+- **Unit Testing**: Pruebas de componentes individuales
+- **Integration Testing**: Pruebas de integración entre módulos
+- **End-to-End Testing**: Pruebas de flujos completos
+- **Performance Testing**: Pruebas de rendimiento
+
+## Configuración de Entorno de Testing
+
+
+### Herramientas Recomendadas – Frontend
+
+<CardGrid>
+  <Card title="Jest" icon="test-tube">
+    Framework de testing muy usado en JavaScript/TypeScript
+  </Card>
+  <Card title="Testing Library" icon="accessibility">
+    Utilidades para probar componentes de manera accesible
+  </Card>
+  <Card title="Cypress" icon="laptop">
+    Testing end-to-end para aplicaciones web
+  </Card>
+  <Card title="Playwright" icon="puzzle">
+    Testing E2E multiplataforma (web, móvil, escritorio)
+  </Card>
+</CardGrid>
+
+- **Vitest**: Alternativa ligera y rápida para proyectos Vite
+
+### Herramientas Recomendadas – Backend
+
+<CardGrid>
+  <Card title="JUnit (Java)" icon="test-tube">
+    Estándar de facto en testing unitario
+  </Card>
+  <Card title="pytest (Python)" icon="document">
+    Librería robusta y flexible para pruebas
+  </Card>
+  <Card title="Supertest (Node.js)" icon="api">
+    Pruebas de APIs REST en entornos Node/Express
+  </Card>
+  <Card title="k6" icon="rocket">
+    Referencia moderna para pruebas de carga y rendimiento
+  </Card>
+</CardGrid>
+
+### Configuración Básica
+
+```json
+// package.json
+{
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "@testing-library/react": "^13.0.0",
+    "@testing-library/jest-dom": "^5.16.0"
+  }
+}
+```
+
+## Generación Automática de Tests con Cursor AI
+
+### Técnicas de Generación
+
+- **Análisis de código**: Cursor AI analiza la funcionalidad
+- **Generación de casos**: Creación de casos de prueba relevantes  
+- **Cobertura**: Asegurar cobertura completa de funcionalidad
+- **Mantenimiento**: Actualización automática de tests
+
+### Prompts Efectivos para Testing
+
+**Prompts básicos:**
+```
+"Genera tests unitarios para esta función considerando casos edge y errores"
+"Crea tests de integración para este módulo con mocks apropiados"
+"Desarrolla tests end-to-end para este flujo de usuario"
+```
+
+**Prompts avanzados:**
+```
+"Analiza esta función y genera tests que cubran:
+- Casos normales de uso
+- Casos extremos (edge cases)
+- Manejo de errores
+- Validación de tipos
+- Performance con datasets grandes"
+```
+
+## Testing Unitario con Cursor AI
+
+### Generación de Tests Unitarios
+
+Ejemplo práctico de función y sus tests generados automáticamente:
+
+```javascript
+// Función a testear
+function calculateTotal(items) {
+  return items.reduce((total, item) => total + item.price, 0);
+}
+
+// Test generado por Cursor AI
+describe('calculateTotal', () => {
+  test('should return 0 for empty array', () => {
+    expect(calculateTotal([])).toBe(0);
+  });
+
+  test('should calculate total for single item', () => {
+    const items = [{ price: 10 }];
+    expect(calculateTotal(items)).toBe(10);
+  });
+
+  test('should calculate total for multiple items', () => {
+    const items = [{ price: 10 }, { price: 20 }, { price: 30 }];
+    expect(calculateTotal(items)).toBe(60);
+  });
+
+  test('should handle decimal prices', () => {
+    const items = [{ price: 10.50 }, { price: 20.25 }];
+    expect(calculateTotal(items)).toBe(30.75);
+  });
+
+  test('should handle invalid input gracefully', () => {
+    expect(() => calculateTotal(null)).toThrow();
+    expect(() => calculateTotal(undefined)).toThrow();
+  });
+});
+```
+
+
+### Testing de Componentes React
+
+Ejemplo de testing para componentes React generado por Cursor AI:
+
+```typescript
+// Componente a testear
+interface User {
+  name: string;
+  email: string;
+  status: string;
+}
+
+const UserProfile: React.FC<{ user: User }> = ({ user }) => {
+  return (
+    <div className="user-profile" data-testid="user-profile">
+      <h2 data-testid="user-name">{user.name}</h2>
+      <p data-testid="user-email">{user.email}</p>
+      <span className="status" data-testid="user-status">{user.status}</span>
+    </div>
+  );
+};
+
+// Tests generados por Cursor AI
+import { render, screen } from '@testing-library/react';
+import UserProfile from './UserProfile';
+
+describe('UserProfile', () => {
+  const mockUser = {
+    name: 'John Doe',
+    email: 'john@example.com',
+    status: 'active'
+  };
+
+  test('renders user information correctly', () => {
+    render(<UserProfile user={mockUser} />);
+    
+    expect(screen.getByTestId('user-name')).toHaveTextContent('John Doe');
+    expect(screen.getByTestId('user-email')).toHaveTextContent('john@example.com');
+    expect(screen.getByTestId('user-status')).toHaveTextContent('active');
+  });
+
+  test('applies correct CSS classes', () => {
+    render(<UserProfile user={mockUser} />);
+    
+    expect(screen.getByTestId('user-profile')).toHaveClass('user-profile');
+    expect(screen.getByTestId('user-status')).toHaveClass('status');
+  });
+
+  test('handles empty user data gracefully', () => {
+    const emptyUser = { name: '', email: '', status: '' };
+    render(<UserProfile user={emptyUser} />);
+    
+    expect(screen.getByTestId('user-profile')).toBeInTheDocument();
+  });
+});
+```
+
+## Testing de Integración
+
+### Configuración de Mocks
+
+Los tests de integración validan la interacción entre diferentes módulos:
+
+```typescript
+// Mock de API
+jest.mock('../api/userApi', () => ({
+  fetchUser: jest.fn(),
+  updateUser: jest.fn(),
+  deleteUser: jest.fn()
+}));
+
+import { userApi } from '../api/userApi';
+import { userService } from '../services/userService';
+
+// Test de integración
+describe('UserService Integration', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('should fetch and update user data', async () => {
+    const mockUser = { id: 1, name: 'John', email: 'john@example.com' };
+    const updatedUser = { ...mockUser, name: 'Jane' };
+    
+    userApi.fetchUser.mockResolvedValue(mockUser);
+    userApi.updateUser.mockResolvedValue(updatedUser);
+
+    const result = await userService.updateUserName(1, 'Jane');
+    
+    expect(result.name).toBe('Jane');
+    expect(userApi.fetchUser).toHaveBeenCalledWith(1);
+    expect(userApi.updateUser).toHaveBeenCalledWith(1, { name: 'Jane' });
+  });
+
+  test('should handle API errors gracefully', async () => {
+    userApi.fetchUser.mockRejectedValue(new Error('User not found'));
+
+    await expect(userService.updateUserName(999, 'Jane'))
+      .rejects.toThrow('User not found');
+  });
+});
+```
+
+### Testing de Context y Providers
+
+```typescript
+// Test de Context Provider
+describe('AuthProvider Integration', () => {
+  test('should provide authentication state to children', () => {
+    const mockUser = { id: 1, name: 'John' };
+    
+    render(
+      <AuthProvider>
+        <TestComponent />
+      </AuthProvider>
+    );
+
+    expect(screen.getByTestId('auth-status')).toHaveTextContent('logged-in');
+  });
+});
+```
+
+### Configuración de Cypress
+
+```javascript
+// cypress.config.js
+module.exports = {
+  e2e: {
+    baseUrl: 'http://localhost:3000',
+    setupNodeEvents(on, config) {
+      // Configuración de plugins
+    },
+    viewportWidth: 1280,
+    viewportHeight: 720,
+    video: true,
+    screenshotOnRunFailure: true
+  },
+};
+```
+
+### Generación de Tests E2E
+
+```javascript
+// Test E2E generado por Cursor AI
+describe('User Registration Flow', () => {
+  beforeEach(() => {
+    cy.visit('/register');
+  });
+
+  it('should complete user registration successfully', () => {
+    // Llenar formulario
+    cy.get('[data-testid="name-input"]').type('John Doe');
+    cy.get('[data-testid="email-input"]').type('john@example.com');
+    cy.get('[data-testid="password-input"]').type('password123');
+    
+    // Enviar formulario
+    cy.get('[data-testid="submit-button"]').click();
+    
+    // Verificar redirección y mensaje de bienvenida
+    cy.url().should('include', '/dashboard');
+    cy.get('[data-testid="welcome-message"]')
+      .should('contain', 'Welcome, John Doe');
+  });
+
+  it('should show validation errors for invalid data', () => {
+    // Intentar enviar formulario vacío
+    cy.get('[data-testid="submit-button"]').click();
+    
+    // Verificar mensajes de error
+    cy.get('[data-testid="name-error"]')
+      .should('contain', 'Name is required');
+    cy.get('[data-testid="email-error"]')
+      .should('contain', 'Valid email is required');
+  });
+});
+```
+
+## Automatización y CI/CD
+
+### Configuración de GitHub Actions
+
+```yaml
+# .github/workflows/test.yml
+name: Tests
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: npm ci
+      - run: npm run test:coverage
+      - run: npm run test:e2e
+      - uses: codecov/codecov-action@v3
+```
+
+### Scripts de Automatización
+
+```json
+{
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:e2e": "cypress run",
+    "test:e2e:open": "cypress open",
+    "test:ci": "npm run test && npm run test:e2e"
+  }
+}
+```
+
+## Troubleshooting
+
+### Problemas Comunes de Testing
+
+<CardGrid>
+  <Card title="Tests Lentos" icon="warning">
+    Optimiza mocks y reduce dependencias externas
+  </Card>
+  <Card title="Tests Flaky" icon="error">
+    Usa waitFor y aserciones más específicas
+  </Card>
+  <Card title="Baja Cobertura" icon="magnifier">
+    Identifica áreas sin tests con coverage reports
+  </Card>
+  <Card title="Tests Complejos" icon="puzzle">
+    Descompón en casos más simples y específicos
+  </Card>
+</CardGrid>
+
+### Soluciones Rápidas
+
+1. **Usa data-testid**: Para selecciones más confiables
+2. **Mock dependencias**: Aísla el código bajo prueba
+3. **Tests determinísticos**: Evita dependencias temporales
+4. **Limpieza entre tests**: Usa beforeEach/afterEach
+
+---
+
+## Resumen del Módulo
+
+¡Has completado el **Módulo 10: Testing Automatizado con Cursor AI**!
+
+En este módulo has aprendido a:
+
+✅ **Configurar entornos de testing** con herramientas modernas  
+✅ **Generar tests automáticamente** usando prompts efectivos  
+✅ **Crear tests unitarios robustos** con alta cobertura  
+✅ **Implementar tests de integración** con mocks apropiados  
+✅ **Desarrollar tests E2E completos** para flujos críticos  
+✅ **Automatizar testing en CI/CD** para calidad continua  
+
+**¡Has completado el Módulo 10!** 🎉
+

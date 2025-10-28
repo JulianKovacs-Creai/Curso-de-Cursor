@@ -1,0 +1,6 @@
+{
+  "devDependencies": {
+    "@modelcontextprotocol/sdk": "^1.20.2",
+    "axios": "^1.13.0"
+  }
+}

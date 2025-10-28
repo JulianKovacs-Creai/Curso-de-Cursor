@@ -1,0 +1,477 @@
+---
+title: "Módulo 11: Integración con MCP (Model Context Protocol)"
+description: "Domina la integración avanzada de herramientas usando MCP para crear ecosistemas de desarrollo completamente integrados y futurizados."
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Objetivos de Aprendizaje
+
+Al finalizar este módulo, serás capaz de:
+
+1. **Comprender la arquitectura** y filosofía del Model Context Protocol (MCP) como estándar de interoperabilidad de IA
+2. **Configurar MCPs nativos** (Playwright, Serverless, Database connectors) para extender capacidades de Cursor AI  
+3. **Desarrollar MCPs personalizados** para integrar APIs internas y herramientas específicas del proyecto
+4. **Implementar estrategias avanzadas** de debugging y troubleshooting para MCPs en entornos de producción
+5. **Optimizar el ecosistema completo** de MCPs para máxima eficiencia y performance en proyectos enterprise
+6. **Orquestar la integración final** del proyecto e-commerce con un ecosistema completo de herramientas y servicios
+
+## 📹 Videos del Módulo
+
+### 🎯 Video Principal: MCP y Integraciones
+
+Domina el Model Context Protocol para integraciones empresariales.
+
+<iframe 
+  width="100%" 
+  height="400" 
+  src="https://www.youtube.com/embed/fGQ_gl_RQ_M" 
+  title="MCP y Integraciones Avanzadas" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  allowfullscreen
+  style="border-radius: 8px; margin: 1rem 0;">
+</iframe>
+
+### 🛠️ Video Complementario: Configuración MCP
+
+Configuración y setup de MCPs nativos y personalizados.
+
+<iframe 
+  width="100%" 
+  height="400" 
+  src="https://www.youtube.com/embed/7j_NE6Pjv-E" 
+  title="Configuración de MCPs" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  allowfullscreen
+  style="border-radius: 8px; margin: 1rem 0;">
+</iframe>
+
+### 🚀 Video Avanzado: MCPs Personalizados
+
+Desarrollo de MCPs personalizados para APIs internas.
+
+<iframe 
+  width="100%" 
+  height="400" 
+  src="https://www.youtube.com/embed/E2DEHOEbzks" 
+  title="MCPs Personalizados y APIs Internas" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  allowfullscreen
+  style="border-radius: 8px; margin: 1rem 0;">
+</iframe>
+
+<CardGrid>
+  <Card title="Arquitectura MCP" icon="puzzle">
+    Comprende el protocolo estándar de interoperabilidad de IA
+  </Card>
+  <Card title="MCPs Nativos" icon="laptop">
+    Configura conectores Playwright, Database y Cloud
+  </Card>
+  <Card title="MCPs Personalizados" icon="code">
+    Desarrolla integraciones para APIs internas
+  </Card>
+  <Card title="Ecosistema Integrado" icon="rocket">
+    Orquesta un workflow completamente unificado
+  </Card>
+</CardGrid>
+
+## Introducción al Model Context Protocol
+
+En este módulo culminante transformamos nuestro proyecto e-commerce de una aplicación bien automatizada en un ecosistema inteligente completamente integrado.
+
+El Model Context Protocol (MCP) representa la quinta revolución en herramientas de desarrollo: después de IDEs, control de versiones, CI/CD, y agentes de IA, ahora tenemos protocolos universales de interoperabilidad que permiten a la IA interactuar nativamente con cualquier herramienta, servicio o API.
+
+### Beneficios Empresariales de MCP
+
+<CardGrid>
+  <Card title="Unificación" icon="puzzle">
+    Un protocolo estándar para integrar cualquier herramienta con IA
+  </Card>
+  <Card title="Extensibilidad" icon="rocket">
+    Capacidad de crear integraciones personalizadas sin vendor lock-in
+  </Card>
+  <Card title="Future-Proofing" icon="star">
+    Arquitectura preparada para la próxima generación de agentes AI
+  </Card>
+  <Card title="Ventaja Competitiva" icon="trophy">
+    Workflows que serán estándar en 2-3 años, implementados hoy
+  </Card>
+</CardGrid>
+
+> **Impacto Empresarial**: Las empresas que adoptan MCP temprano reportan incrementos de productividad del 400-500% y reducción de friction entre herramientas del 90%.
+
+## Estado Actual del Proyecto E-commerce
+
+### Evolución Completa Hasta Módulo 10
+
+```
+ecommerce-project/
+├── 🎯 Core Application                 ✅ Completa y optimizada
+│   ├── Frontend (React + TypeScript)   ✅ UI/UX profesional
+│   ├── Backend (FastAPI + PostgreSQL)  ✅ APIs robustas y escalables
+│   └── Infrastructure (Docker + K8s)   ✅ Deployment automatizado
+├── 📚 Documentation & Knowledge        ✅ Auto-mantenida y consistente
+│   ├── Living Documentation            ✅ Siempre actualizada
+│   ├── Rules & Patterns               ✅ Evolutivas y aplicadas
+│   └── Decision Records               ✅ Historical context preserved
+├── 🤖 Advanced Automation             ✅ Workflow 80% automatizado
+│   ├── Background Agents              ✅ Tareas largas automatizadas
+│   ├── BugBot Reviews                 ✅ Code quality consistente
+│   ├── Team Integration               ✅ Slack/Teams seamless
+│   └── Semantic Commits               ✅ Historial inteligente
+├── 🧪 Comprehensive Testing           ✅ Coverage 95%+ auto-mantenido
+│   ├── Auto-Generated Tests           ✅ Unit + Integration + E2E
+│   ├── Smart Test Selection           ✅ Optimal execution strategy
+│   ├── Flaky Test Detection           ✅ Self-healing test suite
+│   └── Continuous Validation          ✅ Real-time quality gates
+└── 🔗 MCP Integrations               🚧 ESTE MÓDULO
+    ├── External Tool Integration       🎯 Playwright, Database, Cloud
+    ├── Custom Internal MCPs            🎯 APIs internas, monitoring
+    ├── Ecosystem Orchestration         🎯 Unified workflow
+    └── Future-Proof Architecture       🎯 Extensible foundation
+```
+
+## Arquitectura MCP Fundamental
+
+### ¿Qué es MCP?
+
+Model Context Protocol (MCP) es un protocolo estándar abierto desarrollado por Anthropic que permite a modelos de IA interactuar de forma nativa y segura con herramientas externas, APIs, bases de datos, y servicios cloud mediante una arquitectura de conectores estandarizados.
+
+### Diferencias Fundamentales
+
+**ANTES de MCP: Integraciones fragmentadas**
+```typescript
+interface PreMCPIntegrations {
+  cursor_api: CursorAPI;           // Cursor-specific API
+  github_api: GitHubAPI;          // GitHub-specific API  
+  slack_api: SlackAPI;            // Slack-specific API
+  database_api: DatabaseAPI;     // Database-specific API
+  monitoring_api: MonitoringAPI;  // Monitoring-specific API
+  
+  problems: [
+    "Custom authentication per service",
+    "Different data formats and protocols", 
+    "Manual orchestration between tools",
+    "No shared context between integrations",
+    "Vendor lock-in for each tool"
+  ];
+}
+```
+
+**DESPUÉS de MCP: Protocolo unificado**
+```typescript
+interface PostMCPIntegrations {
+  mcp_runtime: MCPRuntime;        // Single MCP runtime
+  
+  connectors: [
+    MCPConnector<GitHubProvider>,    // Standardized GitHub MCP
+    MCPConnector<SlackProvider>,     // Standardized Slack MCP
+    MCPConnector<DatabaseProvider>,  // Standardized Database MCP
+    MCPConnector<CustomAPIProvider>  // Custom API MCP
+  ];
+  
+  benefits: [
+    "Unified authentication and security model",
+    "Standardized data formats and protocols",
+    "Automatic orchestration between tools",
+    "Shared context across all integrations", 
+    "Vendor-agnostic, future-proof architecture"
+  ];
+}
+```
+
+## Configuración de MCPs Nativos
+
+### MCP de Playwright
+
+Configuración para testing automatizado:
+
+```json
+// mcp-config.json
+{
+  "mcps": {
+    "playwright": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-playwright"],
+      "env": {
+        "PLAYWRIGHT_BASE_URL": "http://localhost:3000"
+      }
+    }
+  }
+}
+```
+
+### MCP de Base de Datos
+
+```json
+{
+  "mcps": {
+    "database": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-postgres"],
+      "env": {
+        "DATABASE_URL": "postgresql://user:pass@localhost:5432/ecommerce"
+      }
+    }
+  }
+}
+```
+
+### MCP de Git
+
+```json
+{
+  "mcps": {
+    "git": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-git"],
+      "env": {
+        "GIT_REPO_PATH": "/path/to/your/repo"
+      }
+    }
+  }
+}
+```
+
+## Desarrollo de MCPs Personalizados
+
+### MCP para API Interna
+
+```typescript
+// src/mcp/internal-api-server.ts
+import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+
+const server = new Server(
+  {
+    name: "internal-api-server",
+    version: "0.1.0",
+  },
+  {
+    capabilities: {
+      tools: {},
+      resources: {},
+    },
+  }
+);
+
+// Herramienta para obtener métricas
+server.setRequestHandler("tools/call", async (request) => {
+  if (request.params.name === "get_metrics") {
+    const response = await fetch("http://internal-api/metrics");
+    const metrics = await response.json();
+    
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(metrics, null, 2)
+        }
+      ]
+    };
+  }
+});
+
+// Herramienta para despliegues
+server.setRequestHandler("tools/call", async (request) => {
+  if (request.params.name === "deploy_service") {
+    const { service, version } = request.params.arguments;
+    
+    const deployResult = await deployService(service, version);
+    
+    return {
+      content: [
+        {
+          type: "text",
+          text: `Deployment successful: ${service}@${version}`
+        }
+      ]
+    };
+  }
+});
+
+async function main() {
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+}
+
+main();
+```
+
+### MCP para Monitoreo
+
+```typescript
+// src/mcp/monitoring-server.ts
+import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+
+const server = new Server(
+  {
+    name: "monitoring-server",
+    version: "0.1.0",
+  },
+  {
+    capabilities: {
+      tools: {},
+      resources: {},
+    },
+  }
+);
+
+server.setRequestHandler("tools/list", async () => {
+  return {
+    tools: [
+      {
+        name: "get_system_health",
+        description: "Get current system health metrics",
+        inputSchema: {
+          type: "object",
+          properties: {}
+        }
+      },
+      {
+        name: "create_alert",
+        description: "Create monitoring alert",
+        inputSchema: {
+          type: "object",
+          properties: {
+            service: { type: "string" },
+            threshold: { type: "number" },
+            condition: { type: "string" }
+          }
+        }
+      }
+    ]
+  };
+});
+```
+
+## Orquestación del Ecosistema Integrado
+
+### Configuración Master
+
+```json
+// .cursor/mcp-settings.json
+{
+  "mcps": {
+    "playwright": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-playwright"]
+    },
+    "database": {
+      "command": "npx", 
+      "args": ["@modelcontextprotocol/server-postgres"],
+      "env": {
+        "DATABASE_URL": "postgresql://localhost:5432/ecommerce"
+      }
+    },
+    "git": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-git"]
+    },
+    "internal-api": {
+      "command": "node",
+      "args": ["dist/mcp/internal-api-server.js"]
+    },
+    "monitoring": {
+      "command": "node", 
+      "args": ["dist/mcp/monitoring-server.js"]
+    }
+  }
+}
+```
+
+### Workflow Integrado
+
+Con MCP configurado, Cursor AI puede ahora:
+
+1. **Analizar código** y ejecutar tests automáticamente con Playwright
+2. **Consultar la base de datos** para entender el estado actual
+3. **Hacer commits inteligentes** usando Git MCP
+4. **Monitorear el sistema** y crear alertas automáticamente
+5. **Desplegar servicios** cuando los tests pasan
+
+## Debugging y Troubleshooting
+
+### Problemas Comunes con MCP
+
+<CardGrid>
+  <Card title="Conexión Fallida" icon="warning">
+    Verifica que el servidor MCP esté ejecutándose correctamente
+  </Card>
+  <Card title="Permisos" icon="error">
+    Configura las variables de entorno y credenciales necesarias
+  </Card>
+  <Card title="Performance" icon="magnifier">
+    Optimiza las consultas y limita el scope de las operaciones
+  </Card>
+  <Card title="Compatibilidad" icon="puzzle">
+    Asegúrate de usar versiones compatibles de los MCPs
+  </Card>
+</CardGrid>
+
+### Herramientas de Debug
+
+```bash
+# Verificar configuración MCP
+cursor --mcp-status
+
+# Logs de MCPs
+cursor --mcp-logs
+
+# Test de conectividad
+cursor --mcp-test-connection [mcp-name]
+```
+
+## Troubleshooting
+
+### Problemas Comunes de MCP
+
+<CardGrid>
+  <Card title="Configuración Incorrecta" icon="warning">
+    Revisa la sintaxis del archivo mcp-settings.json
+  </Card>
+  <Card title="MCPs No Responden" icon="error">
+    Verifica que los servidores MCP estén ejecutándose
+  </Card>
+  <Card title="Permisos de Red" icon="magnifier">
+    Configura firewalls y variables de entorno correctamente
+  </Card>
+  <Card title="Versiones Incompatibles" icon="puzzle">
+    Actualiza a las últimas versiones compatibles
+  </Card>
+</CardGrid>
+
+### Comandos de Diagnóstico
+
+```bash
+# Verificar estado de MCPs
+cursor mcp status
+
+# Ver logs detallados
+cursor mcp logs --verbose
+
+# Test de conectividad específico
+cursor mcp test playwright
+```
+
+---
+
+## Resumen del Módulo
+
+¡Has completado el **Módulo 11: Integración con MCP (Model Context Protocol)**!
+
+En este módulo has aprendido a:
+
+✅ **Comprender la arquitectura MCP** y su importancia en el futuro del desarrollo  
+✅ **Configurar MCPs nativos** para extender las capacidades de Cursor AI  
+✅ **Desarrollar MCPs personalizados** para integraciones específicas  
+✅ **Orquestar un ecosistema integrado** de herramientas y servicios  
+✅ **Implementar debugging avanzado** para MCPs en producción  
+✅ **Crear arquitecturas future-proof** preparadas para la próxima generación de IA  
+
+**¡Has completado el Módulo 11!** 🎉
+
+Con MCP dominado, tu proyecto ahora funciona como un ecosistema completamente integrado donde Cursor AI puede interactuar nativamente con cualquier herramienta, base de datos, o servicio que necesites. ¡Estás listo para el futuro del desarrollo asistido por IA!

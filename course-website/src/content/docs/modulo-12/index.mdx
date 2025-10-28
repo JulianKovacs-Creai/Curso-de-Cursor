@@ -1,0 +1,660 @@
+---
+title: "Módulo 12: Seguridad y Privacidad con Cursor AI"
+description: "Implementa configuraciones de seguridad avanzadas, cumplimiento normativo y protección de datos para entornos empresariales con Cursor AI."
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Objetivos de Aprendizaje
+
+Al finalizar este módulo, serás capaz de:
+
+1. **Configurar Cursor AI en modo privado** para entornos empresariales sensibles
+2. **Implementar encriptación robusta** para proteger datos en tránsito y reposo
+3. **Gestionar API keys y tokens** de forma segura y automatizada
+4. **Configurar vulnerability scanning** automatizado para el código
+5. **Establecer políticas corporativas** de uso de IA
+6. **Implementar cumplimiento normativo** (GDPR, SOX, HIPAA)
+7. **Configurar auditoría completa** de actividades de IA
+8. **Calcular ROI y métricas empresariales** de seguridad
+
+## 📹 Videos del Módulo
+
+### 🔐 Recurso Principal: Cursor Security
+
+Consulta la página oficial de seguridad de Cursor AI con todas las certificaciones y prácticas de seguridad empresarial:
+
+**[🛡️ Cursor Security - Página Oficial](https://cursor.com/security)**
+
+### 🎯 Video Complementario: Configuración Segura
+
+Implementa configuraciones de seguridad avanzadas y cumplimiento normativo.
+
+<iframe 
+  width="100%" 
+  height="400" 
+  src="https://www.youtube.com/embed/pjMooEnzEQs" 
+  title="Configuración Segura y Cumplimiento Normativo" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  allowfullscreen
+  style="border-radius: 8px; margin: 1rem 0;">
+</iframe>
+
+<CardGrid>
+  <Card title="Configuración Privada" icon="lock">
+    Modes on-premise y configuraciones de privacidad
+  </Card>
+  <Card title="Cumplimiento Normativo" icon="document">
+    GDPR, SOX, HIPAA y otras regulaciones
+  </Card>
+  <Card title="Encriptación Avanzada" icon="shield">
+    Protección de datos en tránsito y reposo
+  </Card>
+  <Card title="Auditoría y Monitoreo" icon="magnifier">
+    Logging completo y análisis de actividades
+  </Card>
+</CardGrid>
+
+## Objetivos de Aprendizaje
+
+Al finalizar este módulo, serás capaz de:
+
+- **Configurar Cursor AI en modo privado** para entornos empresariales sensibles
+- **Implementar encriptación robusta** para proteger datos en tránsito y reposo
+- **Gestionar API keys y tokens** de forma segura y automatizada
+- **Configurar vulnerability scanning** automatizado para el código
+- **Establecer políticas corporativas** de uso de IA
+- **Implementar cumplimiento normativo** (GDPR, SOX, HIPAA)
+- **Configurar auditoría completa** de actividades de IA
+- **Calcular ROI y métricas empresariales** de seguridad
+
+## Configuración de Modo Privado y On-Premise
+
+### Cursor AI On-Premise
+
+Para organizaciones que requieren control total sobre sus datos:
+
+```yaml
+# docker-compose.yml - Cursor AI Self-Hosted
+version: '3.8'
+services:
+  cursor-ai-server:
+    image: cursor-ai/enterprise:latest
+    environment:
+      - MODE=on-premise
+      - DATA_RESIDENCY=local
+      - TELEMETRY_ENABLED=false
+      - EXTERNAL_CONNECTIONS=false
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./config:/app/config
+    networks:
+      - cursor-private
+    ports:
+      - "8443:8443"  # HTTPS only
+```
+
+### Configuración de Privacidad
+
+```json
+// .cursor/privacy-config.json
+{
+  "privacyMode": {
+    "enabled": true,
+    "level": "maximum",
+    "dataCollection": {
+      "telemetry": false,
+      "errorReporting": false,
+      "usageAnalytics": false,
+      "codeSnippets": false
+    },
+    "localProcessing": {
+      "enabled": true,
+      "offlineMode": true,
+      "localModels": true
+    },
+    "networking": {
+      "externalConnections": false,
+      "proxyRequired": true,
+      "certificateValidation": "strict"
+    }
+  }
+}
+```
+
+## Encriptación de Datos
+
+### Encriptación en Tránsito
+
+```typescript
+// src/security/encryption.ts
+import { createCipheriv, createDecipheriv, randomBytes, scrypt } from 'crypto';
+import { promisify } from 'util';
+
+export class AdvancedEncryption {
+  private readonly algorithm = 'aes-256-gcm';
+  private readonly scryptAsync = promisify(scrypt);
+
+  async encryptData(data: string, password: string): Promise<EncryptedData> {
+    const salt = randomBytes(16);
+    const iv = randomBytes(16);
+    
+    const key = await this.scryptAsync(password, salt, 32) as Buffer;
+    const cipher = createCipheriv(this.algorithm, key, iv);
+    
+    let encrypted = cipher.update(data, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    
+    const authTag = cipher.getAuthTag();
+    
+    return {
+      encrypted,
+      salt: salt.toString('hex'),
+      iv: iv.toString('hex'),
+      authTag: authTag.toString('hex')
+    };
+  }
+
+  async decryptData(encryptedData: EncryptedData, password: string): Promise<string> {
+    const key = await this.scryptAsync(
+      password, 
+      Buffer.from(encryptedData.salt, 'hex'), 
+      32
+    ) as Buffer;
+    
+    const decipher = createDecipheriv(
+      this.algorithm, 
+      key, 
+      Buffer.from(encryptedData.iv, 'hex')
+    );
+    
+    decipher.setAuthTag(Buffer.from(encryptedData.authTag, 'hex'));
+    
+    let decrypted = decipher.update(encryptedData.encrypted, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    
+    return decrypted;
+  }
+}
+
+interface EncryptedData {
+  encrypted: string;
+  salt: string;
+  iv: string;
+  authTag: string;
+}
+```
+
+### Gestión Segura de API Keys
+
+```typescript
+// src/security/key-management.ts
+export class SecureKeyManager {
+  private keystore: Map<string, EncryptedKey> = new Map();
+  private encryption = new AdvancedEncryption();
+
+  async storeAPIKey(service: string, apiKey: string): Promise<void> {
+    const masterPassword = await this.getMasterPassword();
+    const encryptedKey = await this.encryption.encryptData(apiKey, masterPassword);
+    
+    this.keystore.set(service, {
+      ...encryptedKey,
+      createdAt: new Date(),
+      lastUsed: new Date(),
+      rotationRequired: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000) // 90 days
+    });
+    
+    await this.persistKeystore();
+  }
+
+  async getAPIKey(service: string): Promise<string> {
+    const encryptedKey = this.keystore.get(service);
+    if (!encryptedKey) {
+      throw new SecurityError(`API key not found for service: ${service}`);
+    }
+
+    const masterPassword = await this.getMasterPassword();
+    const decryptedKey = await this.encryption.decryptData(encryptedKey, masterPassword);
+    
+    // Update last used timestamp
+    encryptedKey.lastUsed = new Date();
+    await this.persistKeystore();
+    
+    return decryptedKey;
+  }
+
+  async rotateKey(service: string): Promise<void> {
+    const oldKey = await this.getAPIKey(service);
+    const newKey = await this.generateNewAPIKey(service);
+    
+    await this.storeAPIKey(service, newKey);
+    await this.auditLog('KEY_ROTATION', { service, timestamp: new Date() });
+  }
+}
+```
+
+## Vulnerability Scanning Automatizado
+
+### Scanner de Vulnerabilidades
+
+```typescript
+// src/security/vulnerability-scanner.ts
+export class VulnerabilityScanner {
+  async scanCodebase(path: string): Promise<VulnerabilityReport> {
+    const findings: SecurityFinding[] = [];
+    
+    // Scan for hardcoded secrets
+    findings.push(...await this.scanForSecrets(path));
+    
+    // Scan for known vulnerabilities in dependencies
+    findings.push(...await this.scanDependencies(path));
+    
+    // Scan for insecure code patterns
+    findings.push(...await this.scanCodePatterns(path));
+    
+    // Generate CVSS scores
+    const report = await this.generateReport(findings);
+    
+    return report;
+  }
+
+  private async scanForSecrets(path: string): Promise<SecurityFinding[]> {
+    const patterns = [
+      { name: 'API_KEY', regex: /api[_-]?key['"]\s*[:=]\s*['"][^'"]+['"]/gi },
+      { name: 'PASSWORD', regex: /password['"]\s*[:=]\s*['"][^'"]+['"]/gi },
+      { name: 'SECRET', regex: /secret['"]\s*[:=]\s*['"][^'"]+['"]/gi },
+      { name: 'TOKEN', regex: /token['"]\s*[:=]\s*['"][^'"]+['"]/gi },
+    ];
+
+    const findings: SecurityFinding[] = [];
+    const files = await this.getCodeFiles(path);
+    
+    for (const file of files) {
+      const content = await fs.readFile(file, 'utf-8');
+      
+      for (const pattern of patterns) {
+        const matches = content.match(pattern.regex);
+        if (matches) {
+          findings.push({
+            type: 'HARDCODED_SECRET',
+            severity: 'HIGH',
+            file: file,
+            line: this.getLineNumber(content, matches[0]),
+            description: `Potential hardcoded ${pattern.name} found`,
+            recommendation: 'Use environment variables or secure key management'
+          });
+        }
+      }
+    }
+
+    return findings;
+  }
+}
+```
+
+## Cumplimiento Normativo
+
+### GDPR Compliance
+
+```typescript
+// src/compliance/gdpr.ts
+export class GDPRComplianceEngine {
+  async handleDataSubjectRequest(
+    request: DataSubjectRequest
+  ): Promise<GDPRResponse> {
+    const requestId = this.generateRequestId();
+    
+    switch (request.type) {
+      case 'ACCESS':
+        return await this.handleAccessRequest(requestId, request);
+      case 'RECTIFICATION':
+        return await this.handleRectificationRequest(requestId, request);
+      case 'ERASURE':
+        return await this.handleErasureRequest(requestId, request);
+      case 'PORTABILITY':
+        return await this.handlePortabilityRequest(requestId, request);
+      default:
+        throw new ComplianceError(`Unsupported request type: ${request.type}`);
+    }
+  }
+
+  private async handleAccessRequest(
+    requestId: string,
+    request: DataSubjectRequest
+  ): Promise<GDPRResponse> {
+    const personalData = await this.collectPersonalData(request.dataSubjectId);
+    const processedData = await this.processDataForAccess(personalData);
+
+    return {
+      requestId,
+      requestType: 'ACCESS',
+      outcome: 'COMPLETED',
+      processingTime: Date.now() - request.timestamp.getTime(),
+      dataProvided: processedData,
+      legalBasis: await this.identifyLegalBasis(request.dataSubjectId)
+    };
+  }
+
+  private async handleErasureRequest(
+    requestId: string,
+    request: DataSubjectRequest
+  ): Promise<GDPRResponse> {
+    // Verify if erasure is legally required
+    const erasureEligibility = await this.assessErasureEligibility(
+      request.dataSubjectId, 
+      request
+    );
+    
+    if (!erasureEligibility.eligible) {
+      return {
+        requestId,
+        requestType: 'ERASURE',
+        outcome: 'REJECTED',
+        processingTime: Date.now() - request.timestamp.getTime(),
+        rejectionReason: erasureEligibility.reason,
+        legalBasis: erasureEligibility.legalBasis,
+        dataProvided: false
+      };
+    }
+
+    // Execute erasure across all systems
+    const erasureResults = await this.executeComprehensiveErasure(
+      request.dataSubjectId
+    );
+
+    return {
+      requestId,
+      requestType: 'ERASURE',
+      outcome: 'COMPLETED',
+      processingTime: Date.now() - request.timestamp.getTime(),
+      erasureResults: {
+        systemsAffected: erasureResults.systemsCount,
+        recordsDeleted: erasureResults.recordsDeleted,
+        backupsAffected: erasureResults.backupsAffected
+      },
+      dataProvided: false
+    };
+  }
+}
+```
+
+### SOX Compliance
+
+```typescript
+// src/compliance/sox.ts
+export class SOXComplianceEngine {
+  async performAssessment(): Promise<SOXAssessmentResult> {
+    const assessmentResults: SOXControlAssessment[] = [];
+
+    // Section 302: Corporate Responsibility for Financial Reports
+    assessmentResults.push(await this.assessSection302Compliance());
+
+    // Section 404: Management Assessment of Internal Controls
+    assessmentResults.push(await this.assessSection404Compliance());
+
+    // Section 409: Real-time Issuer Disclosures
+    assessmentResults.push(await this.assessSection409Compliance());
+
+    const overallScore = this.calculateSOXComplianceScore(assessmentResults);
+
+    return {
+      regulation: 'SOX',
+      overallScore: overallScore,
+      status: overallScore >= 90 ? 'COMPLIANT' : 'NON_COMPLIANT',
+      controlAssessments: assessmentResults,
+      internalControls: await this.assessInternalControls(),
+      changeManagement: await this.assessChangeManagementControls(),
+      auditReadiness: await this.assessAuditReadiness()
+    };
+  }
+
+  private async assessSection404Compliance(): Promise<SOXControlAssessment> {
+    const icfrControls = [
+      {
+        control: 'IT General Controls (ITGC)',
+        requirement: 'Controls over IT systems supporting financial reporting',
+        assessment: await this.assessITGeneralControls(),
+        testing: await this.performITGCTesting()
+      },
+      {
+        control: 'Application Controls',
+        requirement: 'Controls within financial applications',
+        assessment: await this.assessApplicationControls(),
+        testing: await this.performApplicationControlTesting()
+      }
+    ];
+
+    return {
+      section: 'Section 404',
+      title: 'Management Assessment of Internal Controls',
+      compliant: icfrControls.every(c => c.assessment.effective),
+      effectiveness: this.calculateControlEffectiveness(icfrControls),
+      controls: icfrControls,
+      managementAssertion: await this.generateManagementAssertion(icfrControls)
+    };
+  }
+}
+```
+
+## Auditoría y Logging
+
+### Sistema de Auditoría Completo
+
+```typescript
+// src/audit/audit-system.ts
+export class ComprehensiveAuditSystem {
+  async logActivity(
+    activity: AuditActivity,
+    user: User,
+    context: AuditContext
+  ): Promise<void> {
+    const auditEntry: AuditEntry = {
+      id: this.generateAuditId(),
+      timestamp: new Date(),
+      activity: activity.type,
+      user: {
+        id: user.id,
+        role: user.role,
+        department: user.department
+      },
+      context: {
+        ...context,
+        ipAddress: await this.getClientIP(),
+        userAgent: await this.getUserAgent(),
+        sessionId: await this.getSessionId()
+      },
+      data: this.sanitizeAuditData(activity.data),
+      classification: await this.classifyActivity(activity),
+      integrity: await this.calculateIntegrity(activity)
+    };
+
+    // Store in multiple locations for redundancy
+    await Promise.all([
+      this.storeInPrimaryAuditLog(auditEntry),
+      this.storeInSecondaryAuditLog(auditEntry),
+      this.sendToSIEM(auditEntry)
+    ]);
+
+    // Real-time alerting for critical activities
+    if (auditEntry.classification.riskLevel === 'HIGH') {
+      await this.triggerSecurityAlert(auditEntry);
+    }
+  }
+
+  async generateComplianceReport(
+    startDate: Date,
+    endDate: Date,
+    regulations: string[]
+  ): Promise<ComplianceReport> {
+    const auditEntries = await this.getAuditEntries(startDate, endDate);
+    
+    const report: ComplianceReport = {
+      reportId: this.generateReportId(),
+      period: { start: startDate, end: endDate },
+      regulations: regulations,
+      summary: await this.generateSummary(auditEntries, regulations),
+      findings: await this.analyzeFindingsForCompliance(auditEntries, regulations),
+      recommendations: await this.generateRecommendations(auditEntries, regulations)
+    };
+
+    return report;
+  }
+}
+```
+
+## Políticas de Uso Corporativas
+
+### Sistema de Políticas
+
+```typescript
+// src/policy/policy-engine.ts
+export class CorporatePolicyEngine {
+  async enforcePolicy(
+    action: UserAction,
+    user: User,
+    resource: Resource
+  ): Promise<PolicyDecision> {
+    const applicablePolicies = await this.getApplicablePolicies(
+      action, 
+      user, 
+      resource
+    );
+
+    const evaluationResults = await Promise.all(
+      applicablePolicies.map(policy => this.evaluatePolicy(policy, action, user, resource))
+    );
+
+    const decision = await this.makeDecision(evaluationResults);
+    
+    await this.auditPolicyDecision(decision, action, user, resource);
+    
+    return decision;
+  }
+
+  async getApplicablePolicies(
+    action: UserAction,
+    user: User,
+    resource: Resource
+  ): Promise<Policy[]> {
+    const policies: Policy[] = [];
+
+    // Data classification policies
+    if (resource.classification) {
+      policies.push(...await this.getDataClassificationPolicies(resource.classification));
+    }
+
+    // Role-based policies
+    policies.push(...await this.getRoleBasedPolicies(user.role));
+
+    // Industry-specific policies
+    if (user.industry) {
+      policies.push(...await this.getIndustryPolicies(user.industry));
+    }
+
+    return policies;
+  }
+}
+```
+
+## Métricas Empresariales y ROI
+
+### Calculadora de ROI
+
+```typescript
+// src/metrics/roi-calculator.ts
+export class SecurityROICalculator {
+  async calculateSecurityROI(
+    implementation: SecurityImplementation,
+    timeframe: number // months
+  ): Promise<SecurityROIReport> {
+    const costs = await this.calculateTotalCosts(implementation, timeframe);
+    const benefits = await this.calculateBenefits(implementation, timeframe);
+    
+    const roi = (benefits.total - costs.total) / costs.total * 100;
+    const paybackPeriod = costs.total / (benefits.total / timeframe);
+
+    return {
+      timeframe,
+      costs,
+      benefits,
+      roi,
+      paybackPeriod,
+      riskReduction: await this.calculateRiskReduction(implementation),
+      complianceValue: await this.calculateComplianceValue(implementation),
+      recommendations: await this.generateROIRecommendations(roi, paybackPeriod)
+    };
+  }
+
+  private async calculateBenefits(
+    implementation: SecurityImplementation,
+    timeframe: number
+  ): Promise<SecurityBenefits> {
+    return {
+      breachPrevention: await this.calculateBreachPreventionSavings(implementation),
+      complianceSavings: await this.calculateComplianceSavings(implementation),
+      operationalEfficiency: await this.calculateEfficiencyGains(implementation),
+      reputationProtection: await this.calculateReputationValue(implementation),
+      insuranceSavings: await this.calculateInsuranceSavings(implementation),
+      total: 0 // Will be calculated
+    };
+  }
+}
+```
+
+## Troubleshooting
+
+### Problemas Comunes de Seguridad
+
+<CardGrid>
+  <Card title="Configuración SSL/TLS" icon="warning">
+    Verifica certificados válidos y configuración HTTPS
+  </Card>
+  <Card title="Permisos de Acceso" icon="error">
+    Revisa configuración de roles y autenticación
+  </Card>
+  <Card title="Logs de Auditoría" icon="magnifier">
+    Asegúrate que el sistema de logging funcione correctamente
+  </Card>
+  <Card title="Cumplimiento Normativo" icon="puzzle">
+    Valida que todas las regulaciones estén implementadas
+  </Card>
+</CardGrid>
+
+### Comandos de Diagnóstico
+
+```bash
+# Verificar configuración de seguridad
+cursor security status
+
+# Validar cumplimiento normativo
+cursor compliance check --regulations gdpr,sox,hipaa
+
+# Generar reporte de auditoría
+cursor audit report --period 30days
+
+# Test de vulnerabilidades
+cursor security scan --full
+```
+
+---
+
+## Resumen del Módulo
+
+¡Has completado el **Módulo 12: Seguridad y Privacidad con Cursor AI**!
+
+En este módulo has aprendido a:
+
+✅ **Configurar Cursor AI en modo privado** y on-premise para máxima seguridad  
+✅ **Implementar encriptación avanzada** para proteger datos sensibles  
+✅ **Gestionar API keys y credenciales** de forma segura y automatizada  
+✅ **Configurar vulnerability scanning** para detectar problemas de seguridad  
+✅ **Establecer políticas corporativas** para el uso seguro de IA  
+✅ **Implementar cumplimiento normativo** completo (GDPR, SOX, HIPAA)  
+✅ **Configurar auditoría y logging** comprehensivos  
+✅ **Calcular ROI de seguridad** y métricas empresariales  
+
+**¡Has completado el Módulo 12!** 🎉
+
+¡Felicitaciones! Has completado todo el **Curso Completo de Cursor AI para Desarrolladores**. Ahora tienes las habilidades y conocimientos para implementar Cursor AI de manera segura y efectiva en cualquier entorno empresarial, cumpliendo con los más altos estándares de seguridad y privacidad.

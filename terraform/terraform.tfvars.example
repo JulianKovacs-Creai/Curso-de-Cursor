@@ -1,0 +1,114 @@
+# Terraform Variables Example for E-commerce
+# Copy this file to terraform.tfvars and update the values
+
+# =============================================================================
+# General Configuration
+# =============================================================================
+
+aws_region     = "us-east-1"
+aws_account_id = "123456789012"
+project_name   = "ecommerce"
+environment    = "production"
+owner          = "DevOps Team"
+domain_name    = "example.com"
+
+# =============================================================================
+# ECS Configuration
+# =============================================================================
+
+# Backend Configuration
+backend_cpu           = 512
+backend_memory        = 1024
+backend_desired_count = 2
+backend_min_capacity  = 1
+backend_max_capacity  = 10
+
+# Frontend Configuration
+frontend_cpu           = 256
+frontend_memory        = 512
+frontend_desired_count = 2
+frontend_min_capacity  = 1
+frontend_max_capacity  = 10
+
+# =============================================================================
+# Database Configuration
+# =============================================================================
+
+db_name                     = "ecommerce"
+db_username                 = "ecommerce_user"
+db_password                 = "your-secure-password-here"
+db_instance_class          = "db.t3.micro"
+db_allocated_storage       = 20
+db_max_allocated_storage   = 100
+db_backup_retention_period = 7
+
+# =============================================================================
+# Redis Configuration
+# =============================================================================
+
+redis_node_type                = "cache.t3.micro"
+redis_num_cache_clusters       = 2
+redis_automatic_failover_enabled = true
+redis_multi_az_enabled         = true
+redis_snapshot_retention_limit = 5
+redis_auth_token              = "your-redis-auth-token"
+
+# =============================================================================
+# Application Configuration
+# =============================================================================
+
+secret_key     = "your-super-secret-key-here"
+jwt_secret_key = "your-jwt-secret-key-here"
+
+# =============================================================================
+# Monitoring Configuration
+# =============================================================================
+
+log_retention_days        = 30
+enable_detailed_monitoring = true
+
+# =============================================================================
+# Security Configuration
+# =============================================================================
+
+enable_encryption        = true
+enable_backup           = true
+backup_retention_days   = 7
+
+# =============================================================================
+# Cost Optimization
+# =============================================================================
+
+enable_spot_instances      = false
+enable_scheduled_scaling   = false
+
+# =============================================================================
+# Feature Flags
+# =============================================================================
+
+enable_container_insights = true
+enable_xray_tracing      = false
+enable_service_mesh      = false
+
+# =============================================================================
+# Network Configuration
+# =============================================================================
+
+enable_nat_gateway   = true
+enable_vpc_endpoints = false
+enable_flow_logs     = true
+
+# =============================================================================
+# Compliance Configuration
+# =============================================================================
+
+enable_compliance_scanning = false
+compliance_standards      = ["SOC2", "PCI-DSS"]
+
+# =============================================================================
+# Disaster Recovery
+# =============================================================================
+
+enable_cross_region_backup = false
+backup_region             = "us-west-2"
+enable_automated_failover = false

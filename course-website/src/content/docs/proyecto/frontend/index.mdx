@@ -1,0 +1,190 @@
+---
+title: "Frontend: React + TypeScript"
+description: Explora la arquitectura del frontend del proyecto y cómo Cursor AI acelera el desarrollo React.
+---
+
+## Tecnologías Utilizadas
+
+### Stack Principal
+- **React 18**: Framework frontend moderno con hooks
+- **TypeScript**: Tipado estático para mayor robustez
+- **Vite**: Build tool ultra-rápido para desarrollo
+- **React Router**: Navegación SPA moderna
+
+### UI y Estilos
+- **Ant Design**: Biblioteca de componentes empresarial
+- **CSS Modules**: Estilos encapsulados y mantenibles
+- **Responsive Design**: Adaptación a múltiples dispositivos
+
+## Estructura del Proyecto Frontend
+
+```
+frontend/
+├── src/
+│   ├── App.tsx              # Componente principal
+│   ├── main.tsx            # Punto de entrada
+│   ├── index.css           # Estilos globales
+│   ├── pages/
+│   │   └── HomePage.tsx    # Página principal
+│   └── shared/
+│       ├── components/     # Componentes reutilizables
+│       │   └── Layout/
+│       │       └── Header.tsx
+│       ├── services/       # Servicios API
+│       │   └── apiClient.ts
+│       └── types/         # Tipos TypeScript
+│           └── index.ts
+├── package.json
+├── vite.config.ts
+├── tsconfig.json
+└── scripts de setup/start
+```
+
+## Componentes Principales
+
+### App.tsx
+El componente raíz que define:
+- Router principal con React Router
+- Layout de la aplicación (Header, Content, Footer)
+- Rutas básicas (expandible para módulos futuros)
+
+```typescript
+// Estructura básica del App component
+<Router>
+  <Layout>
+    <AppHeader />
+    <Content>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        {/* Rutas futuras para productos, carrito, etc. */}
+      </Routes>
+    </Content>
+    <Footer />
+  </Layout>
+</Router>
+```
+
+### Header Component
+- Navegación principal
+- Branding de la aplicación
+- Menu responsive (preparado para más secciones)
+
+### HomePage
+- Landing page del proyecto
+- Componente de demostración
+- Base para funcionalidades futuras
+
+## Servicios y API Integration
+
+### apiClient.ts
+Cliente HTTP configurado para:
+- Comunicación con el backend Python
+- Manejo de errores centralizado
+- Configuración de headers y authentication (futuro)
+
+```typescript
+// Ejemplo de configuración API
+const API_BASE_URL = 'http://localhost:8000'
+// Configuración axios para requests al backend
+```
+
+## Cómo Cursor AI Acelera el Desarrollo React
+
+### 1. Generación de Componentes
+```
+Prompt: "Crear componente ProductCard con props para título, precio e imagen"
+```
+**Cursor AI genera**:
+- Componente TypeScript completo
+- Props interface definida
+- Estilos CSS incluidos
+- Manejo de eventos básico
+
+### 2. Hooks Personalizados
+```
+Prompt: "Hook personalizado para manejar formularios con validación"
+```
+**Cursor AI crea**:
+- Hook con TypeScript
+- Validaciones integradas
+- Estados de loading y error
+- Optimizaciones de performance
+
+### 3. Integración con APIs
+```
+Prompt: "Servicio para obtener lista de productos del backend"
+```
+**Cursor AI desarrolla**:
+- Función async/await
+- Manejo de errores
+- Tipos TypeScript
+- Cache básico si es necesario
+
+### 4. Testing
+```
+Prompt: "Tests para el componente ProductCard"
+```
+**Cursor AI genera**:
+- Test unitarios completos
+- Mocking de dependencias
+- Casos edge incluidos
+- Setup de testing library
+
+## Scripts de Desarrollo
+
+### Configuración Inicial
+```bash
+# Setup automático de dependencias
+./setup.sh    # Linux/Mac
+setup.bat     # Windows
+```
+
+### Desarrollo
+```bash
+# Servidor de desarrollo
+./start.sh    # Linux/Mac
+start.bat     # Windows
+
+# O directamente:
+pnpm dev      # Inicia en localhost:5173
+```
+
+### Build y Deploy
+```bash
+pnpm build    # Build para producción
+pnpm preview  # Preview del build
+pnpm lint     # Linting del código
+```
+
+## Mejoras Planificadas con Cursor AI
+
+Durante el desarrollo del curso, aplicaremos Cursor AI para:
+
+### Módulo 5: Componentes Avanzados
+- Componentes de productos con filtros
+- Sistema de búsqueda en tiempo real
+- Componentes de carrito de compras
+
+### Módulo 7: Estado Global
+- Context API con TypeScript
+- Gestión de estado de usuario
+- Carrito persistente
+
+### Módulo 8: Performance
+- Lazy loading de componentes
+- Optimización de re-renders
+- Code splitting inteligente
+
+### Módulo 9: Testing
+- Tests unitarios automatizados
+- Tests de integración
+- E2E testing con Playwright
+
+## Próximos Pasos
+
+1. **Explora el código**: Navega por los archivos existentes
+2. **Ejecuta el proyecto**: Usa los scripts de setup y start
+3. **Experimenta**: Modifica componentes y ve los cambios
+4. **Aplica Cursor AI**: Usa los prompts sugeridos para generar nuevo código
+
+¿Listo para ver cómo Cursor AI transforma el desarrollo React? ¡Comencemos con los módulos prácticos!

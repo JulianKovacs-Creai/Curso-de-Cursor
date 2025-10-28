@@ -1,0 +1,682 @@
+---
+title: "Módulo 3: Flujo de Trabajo y Prompting Avanzado"
+description: Domina Inline Edit y Composer, implementa técnicas avanzadas de prompting, evita anti-patrones comunes y establece ciclos óptimos de desarrollo para máxima productividad.
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+# Módulo 3: Flujo de Trabajo y Prompting Avanzado
+
+## Objetivos de Aprendizaje
+
+Al finalizar este módulo, serás capaz de:
+
+1. **Dominar Inline Edit (⌘K)** para ediciones precisas, refactoring incremental y correcciones puntuales
+2. **Optimizar Composer (⌘I)** para conversaciones multi-turno contextuales y desarrollo de features complejas
+3. **Implementar técnicas avanzadas de prompting**: anatomía efectiva, few-shot learning y chain-of-thought
+4. **Identificar y evitar anti-patrones comunes** que reducen la efectividad de la IA
+5. **Establecer ciclos óptimos** de prompt → revisión → aplicación para máxima productividad
+6. **Configurar AI Commit Messages** y supervisión inteligente de cambios
+
+## 📹 Videos del Módulo
+
+### 🎯 Video Principal: Workflows y Prompting Avanzado
+
+Domina técnicas avanzadas de prompting y workflows profesionales.
+
+<iframe 
+  width="100%" 
+  height="400" 
+  src="https://www.youtube.com/embed/3289vhOUdKA" 
+  title="Workflows y Prompting Avanzado" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  allowfullscreen
+  style="border-radius: 8px; margin: 1rem 0;">
+</iframe>
+
+### 🛠️ Video Complementario: Técnicas de Configuración
+
+Profundiza en configuraciones avanzadas y optimización del entorno.
+
+<iframe 
+  width="100%" 
+  height="400" 
+  src="https://www.youtube.com/embed/5zR1ZE5aqho" 
+  title="Técnicas Avanzadas de Configuración" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  allowfullscreen
+  style="border-radius: 8px; margin: 1rem 0;">
+</iframe>
+
+## Introducción Conceptual
+
+El dominio del flujo de trabajo con Cursor AI representa la diferencia entre un desarrollador que usa IA ocasionalmente y uno que ha **transformado completamente su productividad**. Este módulo se enfoca en desarrollar la **intuición de prompting**—la habilidad de comunicar intención técnica de forma que los agentes de IA generen exactamente lo que necesitas.
+
+Los desarrolladores más efectivos con Cursor AI no son necesariamente los que conocen más funcionalidades, sino los que han desarrollado un **lenguaje común con la IA**: saben cuándo usar Inline Edit vs Composer, cómo estructurar prompts para diferentes tipos de tareas, y cómo mantener conversaciones técnicas productivas que construyan iterativamente hacia soluciones complejas.
+
+Este flujo de trabajo optimizado puede **multiplicar la velocidad de desarrollo por 3-5x** mientras mantiene o mejora la calidad del código.
+
+## Flujo de Trabajo Básico
+
+### Inline Edit (⌘K): Ediciones Rápidas y Refactoring
+
+#### ¿Cuándo Usar Inline Edit?
+
+Inline Edit es ideal para:
+
+- ✅ **Transformaciones específicas** de código existente
+- ✅ **Refactoring incremental** de funciones o componentes  
+- ✅ **Correcciones puntuales** de bugs identificados
+- ✅ **Optimizaciones de performance** localizadas
+- ✅ **Conversiones de formato** (callbacks → async/await, classes → hooks)
+
+#### Técnicas Avanzadas de Inline Edit
+
+##### 1) Refactoring de Funciones Legacy
+
+```javascript
+// Código original (seleccionar toda la función)
+function fetchUserData(userId, callback) {
+  fetch(`/api/users/${userId}`)
+    .then(response => response.json())
+    .then(data => callback(null, data))
+    .catch(error => callback(error, null));
+}
+
+// Prompt para Inline Edit: ⌘K
+// "Convert to async/await with proper error handling and TypeScript types"
+
+// Resultado esperado:
+async function fetchUserData(userId: string): Promise<UserData> {
+  try {
+    const response = await fetch(`/api/users/${userId}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const userData: UserData = await response.json();
+    return userData;
+  } catch (error) {
+    console.error('Failed to fetch user data:', error);
+    throw error;
+  }
+}
+```
+
+##### 2) Optimización de Componentes React
+
+```tsx
+// Código original (seleccionar el componente completo)
+const UserList = ({ users }) => {
+  return (
+    <div>
+      {users.map(user => (
+        <div key={user.id} onClick={() => handleUserClick(user.id)}>
+          <img src={user.avatar} alt={user.name} />
+          <span>{user.name}</span>
+          <span>{user.email}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+// Prompt para Inline Edit: ⌘K
+// "Optimize for performance with React.memo, useCallback, and proper TypeScript"
+
+// Resultado esperado:
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string;
+}
+
+interface UserListProps {
+  users: User[];
+  onUserClick: (userId: string) => void;
+}
+
+const UserList: React.FC<UserListProps> = React.memo(({ users, onUserClick }) => {
+  return (
+    <div className="user-list">
+      {users.map(user => (
+        <UserListItem 
+          key={user.id} 
+          user={user} 
+          onUserClick={onUserClick}
+        />
+      ))}
+    </div>
+  );
+});
+
+interface UserListItemProps {
+  user: User;
+  onUserClick: (userId: string) => void;
+}
+
+const UserListItem: React.FC<UserListItemProps> = React.memo(({ user, onUserClick }) => {
+  const handleClick = useCallback(() => {
+    onUserClick(user.id);
+  }, [user.id, onUserClick]);
+
+  return (
+    <div className="user-item" onClick={handleClick}>
+      <img 
+        src={user.avatar} 
+        alt={user.name}
+        loading="lazy"
+        className="user-avatar"
+      />
+      <span className="user-name">{user.name}</span>
+      <span className="user-email">{user.email}</span>
+    </div>
+  );
+});
+```
+
+##### 3) Estrategias de Selección Óptima
+
+```typescript
+// Técnicas de selección para mejores resultados
+interface SelectionStrategies {
+  // Selección precisa: solo lo que necesita cambio
+  precise_selection: {
+    target: "Líneas exactas a modificar";
+    context: "Mínimo contexto circundante";
+    example: "Seleccionar solo función problemática, no archivo completo";
+  };
+  
+  // Selección expandida: para refactoring complejo
+  expanded_selection: {
+    target: "Función + dependencias directas";
+    context: "Types, interfaces, imports relevantes";
+    example: "Componente + props interface + helper functions";
+  };
+  
+  // Selección de bloque lógico: unidad completa
+  logical_block: {
+    target: "Módulo o clase completa";
+    context: "Todas las dependencias internas";
+    example: "Custom hook completo con tipos y tests";
+  };
+}
+```
+
+### Composer (⌘I): Conversaciones Multi-Turno
+
+#### ¿Cuándo Usar Composer?
+
+Composer es ideal para:
+
+- ✅ **Generación de código nuevo** desde cero
+- ✅ **Análisis arquitectural** y toma de decisiones
+- ✅ **Resolución de problemas complejos** que requieren múltiples pasos
+- ✅ **Documentación y explicaciones** detalladas
+- ✅ **Planificación de features** antes de implementación
+
+#### Técnicas de Conversaciones Efectivas
+
+##### 1) Estructura de Conversación Ideal
+
+```javascript
+// Patrón: Contexto → Requerimientos → Iteración → Refinamiento
+
+// Turno 1: Establecer contexto completo
+const initialPrompt = `
+Estoy desarrollando un sistema de autenticación para una app React + FastAPI.
+
+Contexto del proyecto:
+- Frontend: React 18 + TypeScript + Zustand
+- Backend: FastAPI + SQLAlchemy + PostgreSQL
+- Autenticación: JWT con refresh tokens
+- Diseño: TailwindCSS siguiendo nuestro design system
+
+Necesito implementar:
+1. Login/registro con validación
+2. Manejo de sesiones persistentes
+3. Rutas protegidas
+4. Password reset
+
+¿Podrías ayudarme a diseñar la arquitectura general y empezar con el store de autenticación?
+`;
+
+// Turno 2: Refinamiento basado en respuesta
+const refinementPrompt = `
+Excelente arquitectura. Ahora necesito que ajustemos el store de Zustand para incluir:
+
+- Estado de carga durante operaciones async
+- Manejo de errores con mensajes user-friendly  
+- Persistencia automática del token en localStorage
+- Auto-refresh del token cuando esté por expirar
+- Cleanup del estado al logout
+
+También quiero que siga nuestros patrones establecidos en el proyecto.
+`;
+
+// Turno 3: Implementación específica
+const implementationPrompt = `
+Perfecto. Ahora implementemos los formularios de login y registro usando:
+
+- React Hook Form + Zod para validación
+- Nuestros componentes de UI existentes (Button, Input, Card)
+- Estados de loading y error consistentes
+- Redirección automática después del login
+- Validación en tiempo real
+
+Empecemos con el componente LoginForm.
+`;
+```
+
+##### 2) Gestión del Historial de Conversación
+
+```typescript
+interface ConversationManagement {
+  // Mantener contexto coherente
+  context_continuity: {
+    strategy: "Referenciar decisiones previas en prompts siguientes";
+    example: "Basándome en el store de auth que acabamos de crear...";
+    benefits: ["Código consistente", "Patrones coherentes"];
+  };
+  
+  // Construcción iterativa
+  iterative_building: {
+    approach: "Agregar complejidad gradualmente";
+    phases: [
+      "Estructura básica y tipos",
+      "Funcionalidad core",
+      "Estados de loading/error", 
+      "Optimizaciones de UX",
+      "Testing y edge cases"
+    ];
+  };
+  
+  // Checkpoints de calidad
+  quality_gates: {
+    frequency: "Cada 3-4 turnos";
+    questions: [
+      "¿Sigue nuestros patrones establecidos?",
+      "¿Mantiene type safety?",
+      "¿Es escalable y mantenible?",
+      "¿Necesitamos refactoring antes de continuar?"
+    ];
+  };
+}
+```
+
+## Técnicas Avanzadas de Prompting
+
+### Anatomía de un Prompt Efectivo
+
+#### Estructura Optimizada
+
+```typescript
+interface EffectivePrompt {
+  // 1. Contexto claro y específico
+  context: {
+    current_situation: "Estado actual del código/proyecto";
+    objective: "Qué queremos lograr específicamente";
+    constraints: "Limitaciones técnicas o de negocio";
+  };
+  
+  // 2. Especificaciones técnicas
+  technical_specs: {
+    technologies: "Stack específico a usar";
+    patterns: "Patrones de código a seguir";
+    performance: "Requisitos de rendimiento";
+    compatibility: "Compatibilidad necesaria";
+  };
+  
+  // 3. Ejemplos y referencias
+  examples: {
+    similar_code: "Referencias en el proyecto";
+    expected_output: "Formato esperado del resultado";
+    edge_cases: "Casos especiales a manejar";
+  };
+  
+  // 4. Criterios de éxito
+  success_criteria: {
+    functional: "Qué debe hacer";
+    quality: "Cómo debe hacerlo";
+    testing: "Cómo verificar que funciona";
+  };
+}
+```
+
+#### Template de Prompt Profesional
+
+```markdown
+# Template para Prompts Estructurados
+
+## Contexto
+[Descripción clara del estado actual y objetivo]
+
+## Requerimientos Técnicos
+- **Stack**: [Tecnologías específicas]
+- **Patrones**: [Convenciones a seguir]
+- **Performance**: [Requisitos específicos]
+- **Compatibilidad**: [Navegadores, devices, etc.]
+
+## Referencias
+- **Código similar**: @Files: [archivos relevantes]
+- **Documentación**: @Docs: [guías internas]
+- **Ejemplos**: [código existente en el proyecto]
+
+## Criterios de Éxito
+- [ ] Funcionalidad core implementada
+- [ ] Sigue patrones establecidos del proyecto
+- [ ] Incluye proper error handling
+- [ ] TypeScript types correctos
+- [ ] Tests unitarios incluidos
+
+## Consideraciones Especiales
+[Edge cases, optimizaciones, restricciones específicas]
+```
+
+### Few-Shot Learning con Ejemplos de Código
+
+#### Técnica: Mostrar Patrones Exitosos
+
+```typescript
+// Ejemplo de few-shot learning para custom hooks
+
+const fewShotPrompt = `
+Necesito crear un custom hook siguiendo nuestros patrones establecidos.
+
+Ejemplos de nuestros hooks existentes:
+
+**Ejemplo 1: Hook de API data**
+\`\`\`typescript
+export function useApiData<T>(url: string) {
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchData = useCallback(async () => {
+   try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(\`HTTP \${response.status}\`);
+      setData(await response.json());
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error desconocido');
+    } finally {
+      setLoading(false);
+    }
+  }, [url]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  return { data, loading, error, refetch: fetchData };
+}
+\`\`\`
+
+**Ejemplo 2: Hook de local storage**
+\`\`\`typescript
+export function useLocalStorage<T>(
+  key: string,
+  initialValue: T
+): [T, (value: T | ((val: T) => T)) => void] {
+  const [storedValue, setStoredValue] = useState<T>(() => {
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch (error) {
+      console.warn(\`Error reading localStorage key "\${key}":, error\`);
+      return initialValue;
+    }
+  });
+
+  const setValue = useCallback((value: T | ((val: T) => T)) => {
+    try {
+      const valueToStore = value instanceof Function ? value(storedValue) : value;
+      setStoredValue(valueToStore);
+      window.localStorage.setItem(key, JSON.stringify(valueToStore));
+    } catch (error) {
+      console.warn(\`Error setting localStorage key "\${key}":, error\`);
+    }
+  }, [key, storedValue]);
+
+  return [storedValue, setValue];
+}
+\`\`\`
+
+Ahora crea un hook \`useDebounce\` que siga exactamente estos mismos patrones:
+- TypeScript genérico apropiado
+- Error handling comprehensivo
+- useCallback para funciones
+- JSDoc documentation completa
+- Nomenclatura consistente
+`;
+```
+
+### Chain-of-Thought Prompting
+
+#### Para Problemas Complejos
+
+```typescript
+const chainOfThoughtPrompt = `
+Necesito optimizar el performance de nuestra app React. Trabajemos sistemáticamente:
+
+**Paso 1: Análisis del Problema**
+Primero analiza este componente e identifica bottlenecks:
+
+@Files: src/components/ProductList.tsx, src/hooks/useProducts.ts
+
+Busca específicamente:
+- Re-renders innecesarios
+- Computaciones costosas en render
+- Fetching de datos ineficiente
+- Memory leaks potenciales
+
+**Paso 2: Estrategia de Optimización**
+Basado en el análisis, determina:
+- ¿Cuáles optimizaciones tendrán mayor impacto?
+- ¿Qué orden de implementación es más efectivo?
+- ¿Hay trade-offs que debemos considerar?
+- ¿Necesitamos cambios arquitecturales?
+
+**Paso 3: Implementación**
+Crea la versión optimizada con:
+- React.memo donde sea beneficioso
+- useMemo/useCallback estratégicos
+- Virtualización si es necesario
+- Data fetching optimizado
+
+**Paso 4: Validación**
+Explica cómo medir las mejoras:
+- Métricas de performance a trackear
+- Herramientas de profiling recomendadas
+- Tests de regresión necesarios
+
+Empecemos con el Paso 1.
+`;
+```
+
+## Anti-patrones y Mejores Prácticas
+
+### Errores Comunes de Prompting
+
+<CardGrid>
+  <Card title="❌ Prompts Vagos" icon="warning">
+    **Malo**: "Haz que este código sea mejor"
+    
+    **Bueno**: "Optimiza este componente React para performance reduciendo re-renders innecesarios"
+  </Card>
+  
+  <Card title="❌ Sobrecarga de Contexto" icon="warning">
+    **Malo**: "Aquí están 50 archivos, arregla todos los bugs"
+    
+    **Bueno**: "@Files: componente específico con bug identificado"
+  </Card>
+</CardGrid>
+
+### Anti-Patrones de Desarrollo
+
+#### Dependencia Ciega sin Revisión
+
+```typescript
+interface DevelopmentAntiPatterns {
+  // Aceptar código generado sin review
+  blind_acceptance: {
+    risks: [
+      "Bugs introducidos sin detectar",
+      "Código inconsistente con proyecto",
+      "Vulnerabilidades de seguridad",
+      "Patrones subóptimos propagados"
+    ];
+    solution: {
+      always_review: "Revisar cada línea generada",
+      test_thoroughly: "Probar todo código de IA",
+      validate_patterns: "Verificar consistencia",
+      security_check: "Validar implicaciones de seguridad"
+    };
+  };
+}
+```
+
+### Casos Donde NO Usar Cursor AI
+
+| Escenario | Razón | Enfoque Recomendado |
+|----------|--------|-------------------|
+| **Lógica Crítica de Seguridad** | Requiere verificación experta | Diseño humano + IA para implementación |
+| **Algoritmos de Dominio Específico** | IA puede no entender sutilezas | Especificar requirements exactos |
+| **Aprendizaje Fundamental** | El proceso de struggle es educativo | Usar IA como tutor, no solucionador |
+
+## Ciclo Óptimo: Prompt → Revisión → Aplicación
+
+### Workflow de Revisión Sistemática
+
+#### Fase 1: Pre-aplicación
+
+```typescript
+interface OptimalWorkflow {
+  pre_application: {
+    code_quality_check: [
+      "¿Sigue patrones del proyecto?",
+      "¿TypeScript types correctos?",
+      "¿Error handling apropiado?",
+      "¿Código legible y mantenible?"
+    ];
+    
+    functional_validation: [
+      "¿Resuelve el problema planteado?",
+      "¿Cumple todos los requirements?",
+      "¿Maneja casos edge?",
+      "¿Es la solución óptima?"
+    ];
+  };
+}
+```
+
+#### Métricas de Efectividad
+
+| KPI | Objetivo |
+|-----|----------|
+| **Acceptance Rate** | > 80% de sugerencias aceptadas sin modificación |
+| **Iteration Count** | < 3 prompts promedio por tarea completada |
+| **Time to Solution** | < 10 minutos para tareas estándar |
+| **Quality Score** | > 8/10 en calidad de código post-aplicación |
+
+## AI Commit Messages
+
+### Configuración Optimizada
+
+```json
+// .cursor/config/commit-messages.json
+{
+  "ai_commit_messages": {
+    "enabled": true,
+    "auto_generate": true,
+    "review_before_commit": true,
+    
+    "message_format": {
+      "style": "conventional_commits",
+      "include_scope": true,
+      "max_length": 72,
+      "include_body": true
+    },
+    
+    "analysis_depth": {
+      "understand_business_logic": true,
+      "detect_breaking_changes": true,
+      "identify_bug_fixes": true,
+      "categorize_refactoring": true
+    }
+  }
+}
+```
+
+### Ejemplos de Commit Messages de Calidad
+
+```bash
+# Feature nueva
+feat(auth): implement OAuth 2.0 integration with Google
+
+- Add GoogleAuthProvider component with error handling
+- Implement token refresh mechanism with retry logic
+- Update user store to handle OAuth user data structure
+- Add comprehensive tests for OAuth flow
+
+Breaking Change: User.authProvider field is now required
+
+# Bug fix
+fix(checkout): resolve payment validation edge case
+
+- Handle empty cart state in payment processing
+- Fix race condition in discount code application  
+- Add proper error messages for failed payments
+- Improve retry logic for network failures
+
+Closes #1234
+
+# Performance improvement
+perf(dashboard): optimize data loading and rendering
+
+- Implement React.memo for expensive components
+- Add virtualization for large product lists
+- Use useMemo for complex calculations
+- Reduce API calls by 40% with intelligent caching
+
+Improves initial load time from 3.2s to 1.1s
+```
+
+:::tip[Configuración Avanzada]
+Para configuraciones avanzadas de AI Commit Messages, consulta [AI Commit Guide](https://docs.cursor.com/ai-commits).
+:::
+
+## Troubleshooting de Workflow Común
+
+### Problemas Frecuentes y Soluciones
+
+#### Prompts no generan resultados esperados
+```bash
+# Verificar contexto disponible
+cursor --show-context-analysis
+```
+
+#### Conversaciones se vuelven inconsistentes
+1. Reiniciar conversación en Composer
+2. Establecer contexto claro desde el inicio
+3. Referenciar decisiones previas explícitamente
+
+#### IA genera código que no sigue patrones del proyecto
+```bash
+# Verificar reglas activas
+cursor --validate-rules .cursor/rules/
+```
+
+:::tip[Más Ayuda]
+Para más problemas de workflow, consulta [Workflow Troubleshooting](https://docs.cursor.com/troubleshooting/workflow).
+:::
+
+## Próximo Paso
+
+¡Has completado el Módulo 3! Ahora dominas las técnicas avanzadas de prompting y flujo de trabajo con Cursor AI. En el [Módulo 4](/modulo-4/), aprenderás a aplicar estas habilidades en casos de uso reales: desarrollo full-stack, testing automatizado y optimización de performance.

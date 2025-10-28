@@ -1,0 +1,227 @@
+---
+title: "Backend: Python + FastAPI"
+description: Descubre la arquitectura del backend y cómo Cursor AI optimiza el desarrollo de APIs con Python.
+---
+
+## Tecnologías Utilizadas
+
+### Stack Principal
+- **Python 3.9+**: Lenguaje principal del backend
+- **FastAPI**: Framework web moderno y rápido
+- **SQLite**: Base de datos ligera para desarrollo
+- **Pydantic**: Validación de datos y serialización
+
+### Herramientas de Desarrollo
+- **Uvicorn**: Servidor ASGI de alto rendimiento
+- **SQLAlchemy**: ORM para manejo de base de datos
+- **Pytest**: Framework de testing
+- **Black**: Formateo automático de código
+
+## Estructura del Proyecto Backend
+
+```
+backend/
+├── src/
+│   ├── products/           # Módulo de productos
+│   │   ├── api.py         # Endpoints REST
+│   │   ├── database.py    # Operaciones de BD
+│   │   └── models.py      # Modelos de datos
+│   └── shared/            # Código compartido
+│       ├── config.py      # Configuración global
+│       └── database.py    # Setup de base de datos
+├── main.py                # Punto de entrada
+├── requirements.txt       # Dependencias
+└── scripts de setup/start
+```
+
+## Componentes Principales
+
+### main.py
+El archivo principal que configura:
+- Aplicación FastAPI con metadata
+- Middleware CORS para frontend
+- Incluye routers de módulos
+- Endpoints de salud y status
+
+```python
+app = FastAPI(
+    title="E-commerce Legacy API",
+    description="API para proyecto de curso",
+    version="0.1.0"
+)
+```
+
+### Módulo Products
+
+#### api.py - Endpoints REST
+```python
+@router.get("/products/")
+async def get_products():
+    """Obtener lista de productos"""
+    
+@router.post("/products/")
+async def create_product(product: ProductCreate):
+    """Crear nuevo producto"""
+```
+
+#### models.py - Modelos de Datos
+```python
+class Product(BaseModel):
+    id: int
+    name: str
+    price: float
+    description: str
+```
+
+#### database.py - Operaciones de BD
+```python
+def get_all_products():
+    """Obtiene todos los productos de la BD"""
+    
+def create_product(product_data):
+    """Crea un nuevo producto"""
+```
+
+## Características de la API
+
+### Endpoints Disponibles
+
+#### Generales
+- `GET /` - Información de la API
+- `GET /health` - Health check
+
+#### Productos
+- `GET /products/` - Listar productos
+- `POST /products/` - Crear producto
+- `GET /products/{id}` - Obtener producto específico
+- `PUT /products/{id}` - Actualizar producto
+- `DELETE /products/{id}` - Eliminar producto
+
+### Documentación Automática
+FastAPI genera automáticamente:
+- **Swagger UI**: Disponible en `http://localhost:8000/docs`
+- **ReDoc**: Disponible en `http://localhost:8000/redoc`
+- **OpenAPI Schema**: JSON schema de la API
+
+## Cómo Cursor AI Acelera el Desarrollo Backend
+
+### 1. Generación de Endpoints
+```
+Prompt: "Crear endpoint GET para obtener productos con paginación y filtros"
+```
+**Cursor AI genera**:
+- Endpoint completo con FastAPI
+- Validaciones de parámetros
+- Documentación automática
+- Manejo de errores
+
+### 2. Modelos Pydantic
+```
+Prompt: "Modelo Pydantic para usuario con validación de email"
+```
+**Cursor AI crea**:
+- Clase Pydantic completa
+- Validadores personalizados
+- Tipos de datos correctos
+- Documentación de campos
+
+### 3. Operaciones de Base de Datos
+```
+Prompt: "Función para buscar productos por categoría con SQLAlchemy"
+```
+**Cursor AI desarrolla**:
+- Query SQLAlchemy optimizada
+- Manejo de conexiones
+- Validación de parámetros
+- Control de errores
+
+### 4. Tests Automatizados
+```
+Prompt: "Tests para el endpoint de productos"
+```
+**Cursor AI genera**:
+- Tests con pytest
+- Fixtures de datos de prueba
+- Mocking de base de datos
+- Casos de éxito y error
+
+## Scripts de Desarrollo
+
+### Configuración Inicial
+```bash
+# Setup automático de dependencias
+./setup.sh    # Linux/Mac
+setup.bat     # Windows
+
+# Crea virtual environment e instala dependencies
+```
+
+### Desarrollo
+```bash
+# Servidor de desarrollo
+./start.sh    # Linux/Mac
+start.bat     # Windows
+
+# O directamente:
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+### Base de Datos
+```python
+# Inicialización automática al arrancar
+init_db()  # Crea tablas y datos de ejemplo
+```
+
+## Mejoras Planificadas con Cursor AI
+
+Durante el desarrollo del curso, aplicaremos Cursor AI para:
+
+### Módulo 6: APIs Avanzadas
+- Autenticación JWT
+- Paginación avanzada
+- Filtros complejos
+- Rate limiting
+
+### Módulo 7: Integración
+- Validaciones complejas
+- Serialización optimizada
+- Caché con Redis
+- Background tasks
+
+### Módulo 8: Seguridad
+- Autenticación y autorización
+- Validación de inputs
+- SQL injection protection
+- HTTPS y headers de seguridad
+
+### Módulo 9: Testing y Calidad
+- Tests de integración
+- Tests de performance
+- Coverage completo
+- CI/CD pipeline
+
+## Configuración de Desarrollo
+
+### Variables de Entorno
+```python
+# config.py
+DATABASE_URL = "sqlite:///./ecommerce.db"
+SECRET_KEY = "dev-secret-key"
+CORS_ORIGINS = ["http://localhost:5173"]
+```
+
+### Logging
+```python
+# Setup básico de logging
+import logging
+logging.basicConfig(level=logging.INFO)
+```
+
+## Próximos Pasos
+
+1. **Explora la API**: Ve a `http://localhost:8000/docs` después de iniciar
+2. **Ejecuta el backend**: Usa los scripts de setup y start
+3. **Prueba endpoints**: Usa Swagger UI o Postman
+4. **Aplica Cursor AI**: Usa los prompts sugeridos para generar nuevas funcionalidades
+
+¿Listo para ver cómo Cursor AI acelera el desarrollo de APIs Python? ¡Comencemos con los módulos prácticos!

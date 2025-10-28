@@ -1,0 +1,264 @@
+name: BugBot - Automated Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  pull_request_review:
+    types: [submitted]
+
+env:
+  NODE_VERSION: '18'
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  bugbot-analysis:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install dependencies
+      run: |
+        # Install Node.js dependencies
+        npm install -g @typescript-eslint/parser @typescript-eslint/eslint-plugin
+        npm install -g eslint-plugin-security eslint-plugin-react
+        npm install -g sonarjs eslint-plugin-sonarjs
+        
+        # Install Python dependencies
+        pip install bandit safety semgrep
+        pip install pylint flake8 black isort
+        
+        # Install other tools
+        npm install -g lighthouse
+        npm install -g @lhci/cli
+
+    - name: Configure BugBot
+      run: |
+        mkdir -p .cursor/config
+        cp .cursor/config/bugbot.json .cursor/config/bugbot.json.backup || echo "No existing config found"
+
+    - name: Run BugBot Analysis
+      id: bugbot
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      run: |
+        echo "🤖 Starting BugBot analysis for PR #${{ github.event.pull_request.number }}"
+        
+        # Run BugBot
+        node .cursor/agents/bugbot.js \
+          --pr-number ${{ github.event.pull_request.number }} \
+          --pr-title "${{ github.event.pull_request.title }}" \
+          --pr-author "${{ github.event.pull_request.user.login }}" \
+          --base-branch "${{ github.event.pull_request.base.ref }}" \
+          --head-branch "${{ github.event.pull_request.head.ref }}" \
+          --pr-url "${{ github.event.pull_request.html_url }}"
+        
+        # Capture exit code
+        echo "exit_code=$?" >> $GITHUB_OUTPUT
+
+    - name: Check BugBot Results
+      if: steps.bugbot.outputs.exit_code != 0
+      run: |
+        echo "❌ BugBot analysis failed"
+        exit 1
+
+    - name: Upload BugBot Artifacts
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: bugbot-results-${{ github.event.pull_request.number }}
+        path: |
+          .cursor/logs/bugbot-*.json
+          .cursor/logs/bugbot-*.log
+          .cursor/artifacts/bugbot-*.html
+
+    - name: Comment PR with Results
+      if: always()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const path = require('path');
+          
+          // Look for BugBot results
+          const resultsDir = '.cursor/logs';
+          const resultFiles = fs.readdirSync(resultsDir).filter(f => f.startsWith('bugbot-') && f.endsWith('.json'));
+          
+          if (resultFiles.length === 0) {
+            console.log('No BugBot results found');
+            return;
+          }
+          
+          const latestResult = resultFiles.sort().pop();
+          const resultPath = path.join(resultsDir, latestResult);
+          const results = JSON.parse(fs.readFileSync(resultPath, 'utf8'));
+          
+          // Create comment
+          let comment = `## 🤖 BugBot Analysis Results\n\n`;
+          comment += `**Overall Score:** ${results.overallScore}/100\n`;
+          comment += `**Status:** ${results.status}\n`;
+          comment += `**Analysis Time:** ${results.metadata.duration}ms\n\n`;
+          
+          if (results.summary.totalIssues > 0) {
+            comment += `### 📊 Issues Found\n\n`;
+            comment += `- **Critical:** ${results.summary.criticalIssues}\n`;
+            comment += `- **High:** ${results.summary.highIssues}\n`;
+            comment += `- **Medium:** ${results.summary.mediumIssues}\n`;
+            comment += `- **Low:** ${results.summary.lowIssues}\n\n`;
+            
+            comment += `### 🔍 Issue Breakdown\n\n`;
+            comment += `- **Bugs:** ${results.summary.bugsFound}\n`;
+            comment += `- **Security:** ${results.summary.securityIssues}\n`;
+            comment += `- **Performance:** ${results.summary.performanceIssues}\n`;
+            comment += `- **Code Quality:** ${results.summary.codeQualityIssues}\n`;
+            comment += `- **Architecture:** ${results.summary.architectureIssues}\n\n`;
+          }
+          
+          if (results.suggestions && results.suggestions.length > 0) {
+            comment += `### 💡 Suggestions (${results.suggestions.length})\n\n`;
+            results.suggestions.slice(0, 5).forEach(suggestion => {
+              comment += `- **${suggestion.title}** (${suggestion.effort} effort, ${suggestion.impact} impact)\n`;
+            });
+            if (results.suggestions.length > 5) {
+              comment += `- ... and ${results.suggestions.length - 5} more suggestions\n`;
+            }
+            comment += `\n`;
+          }
+          
+          comment += `### 📈 Analysis Details\n\n`;
+          comment += `- **Files Analyzed:** ${results.summary.filesAnalyzed}\n`;
+          comment += `- **Lines Analyzed:** ${results.summary.linesAnalyzed}\n`;
+          comment += `- **Tools Used:** ${results.metadata.toolsUsed.join(', ')}\n`;
+          comment += `- **AI Analysis:** ${results.metadata.aiAnalysisUsed ? 'Yes' : 'No'}\n`;
+          comment += `- **Confidence:** ${results.metadata.confidence}%\n\n`;
+          
+          comment += `---\n`;
+          comment += `*This analysis was performed by BugBot v${results.version || '1.0.0'}*`;
+          
+          // Post comment
+          await github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+
+    - name: Add Labels
+      if: always()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const path = require('path');
+          
+          // Look for BugBot results
+          const resultsDir = '.cursor/logs';
+          const resultFiles = fs.readdirSync(resultsDir).filter(f => f.startsWith('bugbot-') && f.endsWith('.json'));
+          
+          if (resultFiles.length === 0) {
+            console.log('No BugBot results found for labeling');
+            return;
+          }
+          
+          const latestResult = resultFiles.sort().pop();
+          const resultPath = path.join(resultsDir, latestResult);
+          const results = JSON.parse(fs.readFileSync(resultPath, 'utf8'));
+          
+          // Determine labels based on results
+          const labels = [];
+          
+          if (results.overallScore >= 90) {
+            labels.push('bugbot:excellent');
+          } else if (results.overallScore >= 75) {
+            labels.push('bugbot:good');
+          } else if (results.overallScore >= 60) {
+            labels.push('bugbot:fair');
+          } else {
+            labels.push('bugbot:needs-work');
+          }
+          
+          if (results.summary.criticalIssues > 0) {
+            labels.push('bugbot:critical-issues');
+          }
+          
+          if (results.summary.securityIssues > 0) {
+            labels.push('bugbot:security-issues');
+          }
+          
+          if (results.summary.performanceIssues > 0) {
+            labels.push('bugbot:performance-issues');
+          }
+          
+          if (results.status === 'changes_requested') {
+            labels.push('bugbot:changes-requested');
+          } else if (results.status === 'approved') {
+            labels.push('bugbot:approved');
+          }
+          
+          // Add labels
+          if (labels.length > 0) {
+            await github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: labels
+            });
+          }
+
+    - name: Request Changes on Critical Issues
+      if: always()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const path = require('path');
+          
+          // Look for BugBot results
+          const resultsDir = '.cursor/logs';
+          const resultFiles = fs.readdirSync(resultsDir).filter(f => f.startsWith('bugbot-') && f.endsWith('.json'));
+          
+          if (resultFiles.length === 0) {
+            console.log('No BugBot results found for review');
+            return;
+          }
+          
+          const latestResult = resultFiles.sort().pop();
+          const resultPath = path.join(resultsDir, latestResult);
+          const results = JSON.parse(fs.readFileSync(resultPath, 'utf8'));
+          
+          // Request changes if there are critical issues
+          if (results.summary.criticalIssues > 0 || results.status === 'changes_requested') {
+            await github.rest.pulls.createReview({
+              pull_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              event: 'REQUEST_CHANGES',
+              body: `🚨 **BugBot found critical issues that must be addressed before merging.**\n\nPlease review the analysis results and fix the identified issues.`
+            });
+          } else if (results.status === 'approved') {
+            await github.rest.pulls.createReview({
+              pull_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              event: 'APPROVE',
+              body: `✅ **BugBot analysis passed!** The code looks good and is ready for merge.`
+            });
+          }

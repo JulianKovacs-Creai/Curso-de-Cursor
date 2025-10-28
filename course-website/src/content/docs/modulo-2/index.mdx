@@ -1,0 +1,697 @@
+---
+title: "Módulo 2: Configuración de Proyecto y Workspace"
+description: Estructura profesional de la carpeta .cursor/, reglas jerárquicas, notepads, memories, selección de modelos y configuración de workspaces (monorepos, Docker y microservicios).
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Objetivos de Aprendizaje
+
+Al finalizar este módulo, serás capaz de:
+
+1. **Estructurar** la carpeta `.cursor/` con subdirectorios optimizados para proyectos profesionales.
+2. **Implementar** sistemas de Rules jerárquicos (Project, User, Auto-Attach) con precedencia correcta.
+3. **Crear** Notepads organizados que sirvan como base de conocimiento para equipos.
+4. **Gestionar** Memories para documentar decisiones arquitectónicas y evolución del proyecto.
+5. **Optimizar** la selección de modelos y uso de Max Mode para máxima eficiencia.
+6. **Configurar** workspaces avanzados para monorepos, Docker y microservicios.
+
+## 📹 Videos del Módulo
+
+### 🎯 Video Principal: Configuración y Workspace
+
+Aprende a configurar tu workspace óptimo y establecer la estructura de proyecto perfecta.
+
+<iframe 
+  width="100%" 
+  height="400" 
+  src="https://www.youtube.com/embed/5zR1ZE5aqho" 
+  title="Configuración y Workspace en Cursor AI" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  allowfullscreen
+  style="border-radius: 8px; margin: 1rem 0;">
+</iframe>
+
+### 🛠️ Video Complementario: Setup Avanzado
+
+Configuraciones avanzadas y personalización de tu entorno de desarrollo.
+
+<iframe 
+  width="100%" 
+  height="400" 
+  src="https://www.youtube.com/embed/gqUQbjsYZLQ" 
+  title="Setup Avanzado de Cursor AI" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  allowfullscreen
+  style="border-radius: 8px; margin: 1rem 0;">
+</iframe>
+
+## Introducción Conceptual
+
+La configuración de proyecto en Cursor AI es donde se define la **"inteligencia" del asistente de IA**. Una carpeta `.cursor/` bien estructurada transforma Cursor AI de una herramienta de autocompletado en un **compañero de desarrollo** que comprende profundamente tu proyecto, mantiene consistencia automática y preserva el conocimiento del equipo.
+
+Esta configuración es especialmente crítica para equipos profesionales donde la consistencia, las convenciones establecidas y la memoria organizacional determinan la calidad y velocidad de desarrollo. Un workspace bien configurado puede reducir el tiempo de onboarding de nuevos desarrolladores de **semanas a días**.
+
+## Preparación del Proyecto
+
+### Creación de Carpeta `.cursor/` y Subdirectorios
+
+**Estructura Óptima Recomendada**
+
+```txt
+proyecto/
+├── .cursor/
+│   ├── rules/
+│   │   ├── global.md              # Reglas aplicables a todo el proyecto
+│   │   ├── frontend.md            # Reglas específicas para frontend
+│   │   ├── backend.md             # Reglas específicas para backend
+│   │   ├── testing.md             # Reglas para testing y QA
+│   │   └── patterns/
+│   │       ├── react-components.md
+│   │       ├── api-design.md
+│   │       └── database-patterns.md
+│   ├── notepads/
+│   │   ├── ui-ux/
+│   │   │   ├── design-system.md
+│   │   │   ├── accessibility.md
+│   │   │   └── component-library.md
+│   │   ├── backend/
+│   │   │   ├── api-standards.md
+│   │   │   ├── database-conventions.md
+│   │   │   └── security-guidelines.md
+│   │   └── shared/
+│   │       ├── coding-standards.md
+│   │       ├── git-workflow.md
+│   │       └── deployment-guide.md
+│   ├── memories/
+│   │   ├── architectural-decisions/
+│   │   ├── technology-choices/
+│   │   └── lessons-learned/
+│   └── config/
+│       ├── models.json
+│       ├── context-settings.json
+│       └── workspace.json
+```
+
+**Script de Inicialización**
+
+```bash
+#!/bin/bash
+# setup-cursor-project.sh
+
+echo "🚀 Configurando estructura de proyecto Cursor AI..."
+
+# Crear estructura de directorios
+mkdir -p .cursor/{rules/{patterns},notepads/{ui-ux,backend,shared},memories/{architectural-decisions,technology-choices,lessons-learned},config}
+
+# Crear archivos base
+touch .cursor/rules/{global.md,frontend.md,backend.md,testing.md}
+touch .cursor/rules/patterns/{react-components.md,api-design.md,database-patterns.md}
+touch .cursor/notepads/ui-ux/{design-system.md,accessibility.md,component-library.md}
+touch .cursor/notepads/backend/{api-standards.md,database-conventions.md,security-guidelines.md}
+touch .cursor/notepads/shared/{coding-standards.md,git-workflow.md,deployment-guide.md}
+touch .cursor/config/{models.json,context-settings.json,workspace.json}
+
+echo "✅ Estructura creada exitosamente"
+echo "📝 Próximo paso: Configurar Rules y Notepads según tu proyecto"
+```
+
+## Rules del Proyecto: Jerarquía y Tipos
+
+### 1) Project Rules (Reglas de Proyecto)
+
+**Archivo:** `.cursor/rules/global.md`
+
+```markdown
+# Reglas Globales del Proyecto
+
+## Convenciones de Nomenclatura
+- **Variables y funciones**: camelCase
+- **Componentes React**: PascalCase
+- **Archivos**: kebab-case
+- **Constantes**: UPPER_SNAKE_CASE
+- **Base de datos**: snake_case
+
+## Estructura de Archivos
+- Un componente por archivo
+- Colocar tests junto al componente: `Button.tsx` + `Button.test.tsx`
+- Usar exports named en lugar de default cuando sea posible
+- Organizar imports: externos → internos → relativos
+
+## Patrones Obligatorios
+- Usar TypeScript estricto
+- Implementar error boundaries en componentes de página
+- Validar todas las props con interfaces/types
+- Incluir JSDoc para funciones públicas
+
+## Tecnologías del Stack
+- Frontend: React 18 + TypeScript + TailwindCSS
+- Backend: FastAPI + SQLAlchemy + PostgreSQL
+- Testing: Jest + React Testing Library + Playwright
+- DevOps: Docker + GitHub Actions
+```
+### 2) User Rules (Reglas Personales)
+
+Para configuración personal de reglas, consulta [User Rules Documentation](https://docs.cursor.com/user-rules).
+
+### 3) Auto-Attach Rules (Reglas Auto-Adjuntas)
+
+**Archivo:** `.cursor/rules/patterns/react-components.md`
+
+```md
+<!-- Activación automática -->
+**TRIGGER:** `**/*.{tsx,jsx}` AND contains "React.FC" OR contains "useState"
+
+# Reglas para Componentes React
+
+## Template de Componente Estándar
+
+```typescript
+import React, { useState, useCallback, useMemo } from 'react';
+import { cn } from '@/lib/utils';
+
+// 1. Interface de Props (exportada)
+export interface ComponentNameProps {
+  // Props obligatorias primero
+  title: string;
+  // Props opcionales después
+  variant?: 'primary' | 'secondary';
+  className?: string;
+  children?: React.ReactNode;
+}
+
+// 2. Componente principal
+const ComponentName: React.FC<ComponentNameProps> = ({
+  title,
+  variant = 'primary',
+  className,
+  children
+}) => {
+  // 3. State hooks primero
+  const [isActive, setIsActive] = useState(false);
+  
+  // 4. Computed values con useMemo
+  const computedClass = useMemo(() => cn(
+    'base-class',
+    `variant-${variant}`,
+    className
+  ), [variant, className]);
+  
+  // 5. Event handlers con useCallback
+  const handleClick = useCallback(() => {
+    setIsActive(prev => !prev);
+  }, []);
+  
+  // 6. Render
+  return (
+    <div className={computedClass} onClick={handleClick}>
+      <h2>{title}</h2>
+      {children}
+    </div>
+  );
+};
+
+export default ComponentName;
+```
+
+### Patrones Específicos
+- Usar `useCallback` para event handlers pasados como props
+- Implementar **loading** y **error states**
+- Incluir ARIA labels para accesibilidad
+- Usar `React.memo` para componentes con props complejas
+
+#### Jerarquía de Precedencia
+
+```ts
+// Orden de aplicación (mayor número = mayor prioridad)
+const rulePrecedence = {
+  auto_attach_rules: 100,    // Contexto específico
+  user_rules: 90,            // Preferencias personales  
+  project_rules: 70,         // Estándares del proyecto
+  global_defaults: 10        // Valores por defecto
+};
+```
+
+## Notepads: Plantillas y Convenciones de Equipo
+
+### 1) UI/UX Guidelines
+
+**Archivo:** `.cursor/notepads/ui-ux/design-system.md`
+
+```markdown
+# Design System - Guía de Referencia
+
+## Tokens de Color
+```css
+:root {
+  /* Primary Colors */
+  --color-primary-50: #eff6ff;
+  --color-primary-500: #3b82f6;
+  --color-primary-900: #1e3a8a;
+  
+  /* Semantic Colors */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+}
+```
+
+**Componentes Base — Button System**
+
+```ts
+const buttonVariants = {
+  primary: 'bg-blue-600 text-white hover:bg-blue-700',
+  secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300',
+  outline: 'border border-gray-300 text-gray-700 hover:bg-gray-50'
+};
+
+const buttonSizes = {
+  sm: 'px-3 py-1.5 text-sm',
+  md: 'px-4 py-2 text-base', 
+  lg: 'px-6 py-3 text-lg'
+};
+```
+
+**Spacing System**  
+xs: 4px | sm: 8px | md: 16px | lg: 24px | xl: 32px
+
+**Typography Scale**  
+text-sm: 14px | text-base: 16px | text-lg: 18px | text-xl: 20px
+```
+
+### 2) Backend Standards
+
+**Archivo:** `.cursor/notepads/backend/api-standards.md`
+
+```markdown
+# API Design Standards
+
+## RESTful Conventions
+
+### URL Structure
+GET /api/v1/users          # Obtener todos los usuarios 
+GET /api/v1/users/{id}     # Obtener usuario específico 
+POST /api/v1/users         # Crear nuevo usuario 
+PUT /api/v1/users/{id}     # Actualizar usuario completo 
+PATCH /api/v1/users/{id}   # Actualización parcial 
+DELETE /api/v1/users/{id}  # Eliminar usuario
+
+### Response Format Standard
+```python
+# Respuesta exitosa
+{
+  "success": true,
+  "data": {...},
+  "meta": {
+    "pagination": {...},
+    "total": 100
+  }
+}
+
+# Respuesta de error
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Datos inválidos",
+    "details": {...}
+  }
+}
+```
+**Status Codes**
+- 200: GET, PUT, PATCH exitosos
+- 201: POST exitoso
+- 204: DELETE exitoso
+- 400: Bad Request
+- 401: No autenticado
+- 403: Sin permisos
+- 404: No encontrado
+- 422: Error de validación
+```
+
+### Memories para Decisiones Históricas
+
+#### Architectural Decision Records (ADRs)
+
+**Archivo:** `.cursor/memories/architectural-decisions/001-state-management.md`
+
+```markdown
+# ADR-001: Selección de Zustand para State Management
+
+## Status
+**Aceptado** — 2024-11-15
+
+## Contexto
+Necesitamos una solución de gestión de estado que:
+- Maneje estado global complejo
+- Tenga excelente soporte TypeScript
+- Sea performante con re-renders mínimos
+- Ofrezca buena developer experience
+
+## Decisión
+Adoptar **Zustand** como solución principal de state management.
+
+## Justificación
+
+### Pros de Zustand
+- API minimalista y simple
+- TypeScript support nativo
+- No requiere providers/context wrapping
+- Bundle size pequeño (2.9kb)
+- Subscripción granular al estado
+
+### Alternativas Evaluadas
+- **Redux Toolkit**: Demasiado boilerplate, curva de aprendizaje empinada
+- **Recoil**: Experimental, documentación limitada
+- **Context API**: Performance issues con estado complejo
+
+## Consecuencias
+
+### Positivas
+- Desarrollo más rápido
+- Mejor TypeScript experience
+- Bundle size optimizado
+- Testing más simple
+
+### Negativas
+- Ecosistema menor vs Redux
+- Algunas funcionalidades avanzadas requieren implementación custom
+
+## Implementación
+```typescript
+// stores/authStore.ts
+import { create } from 'zustand';
+
+interface AuthState {
+  user: User | null;
+  isAuthenticated: boolean;
+  login: (credentials: LoginCredentials) => Promise<void>;
+  logout: () => void;
+}
+
+export const useAuthStore = create<AuthState>((set) => ({
+  user: null,
+  isAuthenticated: false,
+  
+  login: async (credentials) => {
+    const user = await authService.login(credentials);
+    set({ user, isAuthenticated: true });
+  },
+  
+  logout: () => {
+    set({ user: null, isAuthenticated: false });
+  }
+}));
+```
+
+**Fecha de Revisión**  
+2025-05-15 — Evaluar después de 6 meses de uso
+```
+
+## Gestión de Modelos y Contexto
+
+### Selección de Modelos (GPT-4.1, Claude, Gemini)
+
+Para configuración detallada de modelos, consulta [Model Selection Guide](https://docs.cursor.com/models) en la documentación de Cursor.
+
+#### Configuración Automática vs Manual
+
+**Archivo:** `.cursor/config/models.json`
+
+```json
+{
+  "model_selection": {
+    "mode": "automatic",
+    "fallback_model": "gpt-4o",
+    "routing_rules": {
+      "file_patterns": {
+        "**/*.test.{ts,js}": "gemini",
+        "**/*.spec.{ts,js}": "gemini",
+        "**/docs/**/*.md": "claude",
+        "**/README.md": "claude",
+        "**/architecture/**": "gpt-4.1"
+      },
+      "task_patterns": {
+        "explain": "claude",
+        "document": "claude",
+        "test": "gemini",
+        "refactor": "gpt-4.1",
+        "optimize": "gpt-4.1",
+        "debug": "auto"
+      }
+    }
+  }
+}
+```
+
+### Características por Modelo
+
+| Modelo | Fortalezas | Casos de Uso Óptimos |
+|---------|------------|---------------------|
+| **GPT-4.1** | Razonamiento complejo, arquitectura | Refactoring, diseño de sistemas |
+| **Claude** | Análisis detallado, explicaciones | Documentación, code reviews |
+| **Gemini** | Testing, código estructurado | Generación de tests, APIs |
+
+### Max Mode para Monorepos
+
+Max Mode permite analizar proyectos completos con **contexto extremo**.
+
+**Archivo:** `.cursor/config/max-mode.json`
+
+```json
+{
+  "max_mode": {
+    "enabled": true,
+    "usage_strategy": "strategic",
+    "activation_triggers": {
+      "manual_only": true,
+      "keywords": ["refactor entire", "analyze codebase", "migrate to", "generate documentation"]
+    },
+    "scope_limits": {
+      "max_files": 500,
+      "exclude_patterns": ["node_modules/**", "dist/**", "*.min.js", "coverage/**"]
+    },
+    "cost_controls": {
+      "max_monthly_usage": 10,
+      "require_confirmation": true
+    }
+  }
+}
+```
+
+## Referencias Contextuales
+
+### @Files: Selección Inteligente
+
+```ts
+// Estrategias de uso por escenario
+const fileSelectionStrategies = {
+  // Desarrollo de componente
+  component_development: [
+    "@Files: src/components/ui/",      // Componentes base
+    "@Files: src/hooks/",              // Custom hooks
+    "@Files: src/types/",              // Definiciones de tipos
+  ],
+  
+  // Debugging específico
+  bug_debugging: [
+    "@Files: src/pages/problem-page.tsx",  // Archivo con bug
+    "@Files: src/hooks/useDataFetch.ts",   // Hook relacionado
+    "@Files: src/api/service.ts"           // Servicio de datos
+  ]
+};
+```
+
+### @Docs: Integración con Documentación
+
+```md
+Create a payment component following our design system.
+
+@Files: src/components/ui/Button.tsx, src/components/ui/Input.tsx
+@Docs: ./docs/design-system.md, ./docs/payment-guidelines.md
+@Web: Stripe Elements React documentation
+
+**Requirements:**
+- Follow design system patterns
+- Include proper validation
+- Handle loading/error states
+```
+
+### @Web: Búsqueda en Tiempo Real
+
+Útil para investigación de tecnologías actuales y resolución de errores específicos.
+
+### @Recommended: Sugerencias Automáticas
+
+Cursor AI sugiere automáticamente contexto relevante basado en: dependencias del archivo actual, historial reciente y similitud de contenido.
+
+## Optimización de Tokens y Costos
+
+**Archivo:** `.cursor/config/context-settings.json`
+
+```json
+{
+  "context_optimization": {
+    "compression_enabled": true,
+    "max_context_files": 20,
+    "smart_exclusions": true,
+    "cost_controls": {
+      "daily_token_limit": 50000,
+      "alert_thresholds": [0.7, 0.9],
+      "auto_downgrade_model": true
+    },
+    "caching": {
+      "enabled": true,
+      "context_ttl": "1h",
+      "response_ttl": "24h"
+    }
+  }
+}
+```
+
+### Técnicas de Optimización
+
+- ✅ **.cursorignore**: Excluir archivos que no aportan contexto
+- ✅ **Contexto incremental**: Empezar con lo mínimo y expandir si es necesario
+- ✅ **Caché inteligente**: Reutilizar análisis de archivos frecuentes
+- ✅ **Compresión contextual**: Resumir archivos grandes manteniendo lo clave
+
+## Workspace Avanzado
+
+### Configuraciones Multi-Proyecto en Monorepos
+
+**Archivo:** `.cursor/config/workspace.json`
+
+```json
+{
+  "workspace_type": "monorepo",
+  "package_manager": "pnpm",
+  "apps": {
+    "web": {
+      "type": "react_app",
+      "path": "apps/web",
+      "rules": [".cursor/rules/frontend.md"],
+      "context_scope": "app_focused"
+    },
+    "api": {
+      "type": "fastapi_app",
+      "path": "apps/api",
+      "rules": [".cursor/rules/backend.md"],
+      "context_scope": "app_focused"
+    }
+  },
+  "packages": {
+    "shared-types": "packages/shared-types",
+    "ui-components": "packages/ui-components"
+  }
+}
+```
+
+### Integración con Docker y Contenedores
+
+**Archivo:** `.cursor/config/docker.json`
+
+```json
+{
+  "docker_integration": {
+    "enabled": true,
+    "auto_detect_containers": true,
+    "development_containers": [
+      {
+        "name": "web-dev",
+        "dockerfile": "Dockerfile.dev",
+        "context_mount": true
+      }
+    ]
+  }
+}
+```
+
+### Configuración de Calidad de Código
+
+**Archivo:** `.cursor/config/quality-tools.json`
+
+```json
+{
+  "code_quality": {
+    "linting": {
+      "eslint": { 
+        "enabled": true, 
+        "auto_fix": true, 
+        "config": ".eslintrc.js" 
+      }
+    },
+    "formatting": {
+      "prettier": { 
+        "enabled": true, 
+        "config": ".prettierrc" 
+      }
+    },
+    "pre_commit": {
+      "enabled": true,
+      "hooks": ["lint", "format", "test"]
+    }
+  }
+}
+```
+
+:::tip[Configuración Avanzada]
+Para configuraciones avanzadas de linters y formatters, consulta [Code Quality Guide](https://docs.cursor.com/quality).
+:::
+
+## Setup para Microservicios
+
+Para arquitecturas de microservicios, utiliza un **service discovery** simple mapeado al workspace.
+
+**Archivo:** `.cursor/config/services.json`
+
+```json
+{
+  "microservices": {
+    "discovery": "workspace_mapping",
+    "services": {
+      "user_service": {
+        "path": "services/user-service",
+        "language": "python",
+        "dependencies": ["auth-service"]
+      },
+      "auth_service": {
+        "path": "services/auth-service",
+        "language": "typescript",
+        "dependencies": []
+      }
+    }
+  }
+}
+```
+
+## Troubleshooting de Configuración Común
+
+### Problemas Frecuentes y Soluciones
+
+#### Reglas no se aplican automáticamente
+```bash
+# Verificar sintaxis de reglas
+cursor --validate-rules .cursor/rules/
+```
+
+#### Max Mode no funciona correctamente
+1. Verificar límites de uso en configuración
+2. Confirmar que el proyecto no excede límites de archivos
+3. Revisar patrones de exclusión en `.cursorignore`
+
+#### Contexto insuficiente en respuestas
+```bash
+# Verificar archivos incluidos en contexto
+cursor --show-context
+```
+
+:::tip[Más Ayuda]
+Para más problemas de configuración, consulta [Configuration Troubleshooting](https://docs.cursor.com/troubleshooting/config).
+:::
+
+## Próximo Paso
+
+¡Has completado el Módulo 2! Ahora tienes un workspace de Cursor AI completamente configurado con reglas inteligentes, notepads organizados y gestión optimizada de contexto. En el [Módulo 3](/modulo-3/), aprenderás técnicas avanzadas de prompting operativo para maximizar la productividad en tareas de desarrollo reales.

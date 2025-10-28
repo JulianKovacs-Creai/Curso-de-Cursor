@@ -1,0 +1,1201 @@
+---
+title: "Módulo 5: Desarrollo Backend con Cursor AI"
+description: Implementa Clean Architecture con FastAPI, gestión de bases de datos, autenticación JWT, testing automatizado y monitoring para APIs empresariales escalables.
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Objetivos de Aprendizaje
+
+Al finalizar este módulo, serás capaz de:
+
+1. **Implementar Clean Architecture** con separación clara de capas (Domain, Application, Infrastructure)
+2. **Desarrollar APIs REST robustas** con FastAPI, validación automática y documentación OpenAPI
+3. **Gestionar bases de datos** con SQLite/PostgreSQL, repositorios async y migraciones
+4. **Implementar autenticación JWT** con hashing seguro, middleware y autorización por roles
+5. **Desarrollar testing automatizado** con pytest, mocking y coverage completo
+6. **Configurar logging y monitoring** con structured logging y observabilidad empresarial
+
+## 📹 Videos del Módulo
+
+### 🎯 Video Principal: Backend con FastAPI
+
+Desarrolla APIs robustas y escalables con FastAPI y Python.
+
+<iframe 
+  width="100%" 
+  height="400" 
+  src="https://www.youtube.com/embed/Rgz6mX93C4Y" 
+  title="Backend con FastAPI y Cursor AI" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  allowfullscreen
+  style="border-radius: 8px; margin: 1rem 0;">
+</iframe>
+
+### 🛠️ Video Complementario: Arquitectura Clean
+
+Implementa Clean Architecture y patrones avanzados de backend.
+
+<iframe 
+  width="100%" 
+  height="400" 
+  src="https://www.youtube.com/embed/AmqdgFuqhv8" 
+  title="Clean Architecture con FastAPI" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  allowfullscreen
+  style="border-radius: 8px; margin: 1rem 0;">
+</iframe>
+
+## Introducción Conceptual
+
+El desarrollo backend moderno va más allá de crear endpoints que "funcionan"—se trata de **arquitectar sistemas distribuidos** que puedan escalar, evolucionar y mantenerse bajo presión empresarial. Este módulo te enseña a usar Cursor AI para construir **APIs robustas con Clean Architecture**.
+
+**Clean Architecture** es el estándar para aplicaciones backend empresariales porque resuelve los problemas fundamentales del desarrollo: **independencia de frameworks**, **testabilidad completa**, **separación de responsabilidades** y **mantenibilidad a largo plazo**. Aprenderás a implementar esta arquitectura usando Cursor AI como tu copiloto de desarrollo.
+
+Al final de este módulo, habrás construido un **backend enterprise-ready** con autenticación JWT, testing automatizado, monitoring avanzado y documentación automática que puede servir miles de requests concurrentes.
+
+## Clean Architecture Implementation
+
+### ¿Por qué Clean Architecture?
+
+#### Problemas del Backend Legacy
+
+```python
+# ❌ ANTES: Código monolítico y mezclado
+src/products/api.py
+├── SQL queries directas (SQL injection)
+├── Lógica de negocio en controllers
+├── Validación básica sin Pydantic
+├── Error handling inconsistente
+├── No separación de responsabilidades
+└── Testing difícil o imposible
+```
+
+#### Solución: Clean Architecture
+
+```python
+# ✅ DESPUÉS: Arquitectura limpia y modular
+src/products/
+├── application/           # Use Cases (lógica de negocio)
+│   ├── create_product.py
+│   ├── get_products.py
+│   ├── update_product.py
+│   └── delete_product.py
+├── domain/               # Entidades y reglas de negocio
+│   ├── interfaces/
+│   │   └── repositories.py
+│   └── models/
+│       └── product.py
+├── infrastructure/       # Implementaciones externas
+│   ├── api/
+│   │   └── products.py
+│   └── db/
+│       └── repositories/
+│           └── product_repository.py
+└── executions.py         # Dependency Injection
+```
+
+### Beneficios de Clean Architecture
+
+<CardGrid>
+  <Card title="🔧 Independencia de Frameworks" icon="setting">
+    Fácil cambiar tecnologías sin afectar la lógica de negocio
+  </Card>
+  
+  <Card title="🧪 Testabilidad Completa" icon="approve-check">
+    Testing aislado por capas con mocking simplificado
+  </Card>
+  
+  <Card title="🎨 Independencia de UI" icon="puzzle">
+    Lógica separada de presentación y frameworks web
+  </Card>
+  
+  <Card title="🗄️ Independencia de Database" icon="document">
+    Cambiar DB sin afectar lógica de aplicación
+  </Card>
+</CardGrid>
+
+### Principios Fundamentales
+
+#### 1. Regla de Dependencias
+
+**Dependencias solo apuntan hacia adentro:**
+`Infrastructure → Application → Domain`
+
+#### 2. Capas de la Arquitectura
+
+##### Domain Layer (Centro)
+
+```python
+# src/products/domain/models/product.py
+from dataclasses import dataclass
+from decimal import Decimal
+from typing import Optional
+from datetime import datetime
+
+@dataclass
+class Product:
+    id: Optional[int]
+    name: str
+    price: Decimal
+    description: str
+    category: str
+    stock: int
+    is_active: bool = True
+    created_at: datetime = None
+    updated_at: datetime = None
+
+    def __post_init__(self):
+        if self.created_at is None:
+            self.created_at = datetime.utcnow()
+        if self.updated_at is None:
+            self.updated_at = datetime.utcnow()
+
+    def update_stock(self, quantity: int) -> None:
+        """Actualiza el stock del producto"""
+        if quantity < 0 and abs(quantity) > self.stock:
+            raise ValueError("Stock insuficiente")
+        self.stock += quantity
+        self.updated_at = datetime.utcnow()
+
+    def is_available(self) -> bool:
+        """Verifica si el producto está disponible"""
+        return self.is_active and self.stock > 0
+
+    def calculate_total_price(self, quantity: int) -> Decimal:
+        """Calcula el precio total para una cantidad"""
+        if quantity <= 0:
+            raise ValueError("Cantidad debe ser mayor a 0")
+        return self.price * quantity
+```
+
+##### Domain Interfaces
+
+```python
+# src/products/domain/interfaces/repositories.py
+from abc import ABC, abstractmethod
+from typing import List, Optional
+from ..models.product import Product
+
+class IProductRepository(ABC):
+    """Interfaz para el repositorio de productos"""
+    
+    @abstractmethod
+    async def create(self, product: Product) -> Product:
+        """Crea un nuevo producto"""
+        pass
+    
+    @abstractmethod
+    async def get_by_id(self, product_id: int) -> Optional[Product]:
+        """Obtiene un producto por ID"""
+        pass
+    
+    @abstractmethod
+    async def get_all(self, skip: int = 0, limit: int = 100) -> List[Product]:
+        """Obtiene todos los productos"""
+        pass
+    
+    @abstractmethod
+    async def update(self, product: Product) -> Product:
+        """Actualiza un producto"""
+        pass
+    
+    @abstractmethod
+    async def delete(self, product_id: int) -> bool:
+        """Elimina un producto"""
+        pass
+    
+    @abstractmethod
+    async def search(self, query: str) -> List[Product]:
+        """Busca productos por nombre o descripción"""
+        pass
+    
+    @abstractmethod
+    async def get_by_category(self, category: str) -> List[Product]:
+        """Obtiene productos por categoría"""
+        pass
+```
+
+##### Application Layer (Use Cases)
+
+```python
+# src/products/application/create_product.py
+from typing import Optional
+from decimal import Decimal
+from ...domain.models.product import Product
+from ...domain.interfaces.repositories import IProductRepository
+
+class CreateProductUseCase:
+    """Use case para crear un producto"""
+    
+    def __init__(self, product_repository: IProductRepository):
+        self.product_repository = product_repository
+    
+    async def execute(self, 
+                     name: str,
+                     price: Decimal,
+                     description: str,
+                     category: str,
+                     stock: int) -> Product:
+        """
+        Ejecuta la creación de un producto
+        
+        Args:
+            name: Nombre del producto
+            price: Precio del producto
+            description: Descripción del producto
+            category: Categoría del producto
+            stock: Stock inicial
+            
+        Returns:
+            Product: Producto creado
+            
+        Raises:
+            ValueError: Si los datos son inválidos
+        """
+        # Validaciones de negocio
+        if not name or len(name.strip()) < 2:
+            raise ValueError("El nombre del producto debe tener al menos 2 caracteres")
+        
+        if price <= 0:
+            raise ValueError("El precio debe ser mayor a 0")
+        
+        if stock < 0:
+            raise ValueError("El stock no puede ser negativo")
+        
+        # Crear entidad de dominio
+        product = Product(
+            id=None,
+            name=name.strip(),
+            price=price,
+            description=description.strip(),
+            category=category.strip(),
+            stock=stock
+        )
+        
+        # Persistir en el repositorio
+        created_product = await self.product_repository.create(product)
+        
+        return created_product
+```
+
+##### Infrastructure Layer
+
+```python
+# src/products/infrastructure/db/repositories/product_repository.py
+import sqlite3
+from typing import List, Optional
+from decimal import Decimal
+from datetime import datetime
+from ....domain.models.product import Product
+from ....domain.interfaces.repositories import IProductRepository
+from ....shared.database import get_db_connection
+
+class SQLiteProductRepository(IProductRepository):
+    """Implementación SQLite del repositorio de productos"""
+    
+    def __init__(self):
+        self.db_path = "ecommerce.db"
+    
+    async def create(self, product: Product) -> Product:
+        """Crea un nuevo producto en la base de datos"""
+        async with get_db_connection() as conn:
+            cursor = await conn.execute("""
+                INSERT INTO products (name, price, description, category, stock, is_active, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                product.name,
+                str(product.price),
+                product.description,
+                product.category,
+                product.stock,
+                product.is_active,
+                product.created_at.isoformat(),
+                product.updated_at.isoformat()
+            ))
+            
+            product_id = cursor.lastrowid
+            await conn.commit()
+            
+            # Retornar producto con ID
+            return Product(
+                id=product_id,
+                name=product.name,
+                price=product.price,
+                description=product.description,
+                category=product.category,
+                stock=product.stock,
+                is_active=product.is_active,
+                created_at=product.created_at,
+                updated_at=product.updated_at
+            )
+    
+    async def get_by_id(self, product_id: int) -> Optional[Product]:
+        """Obtiene un producto por ID"""
+        async with get_db_connection() as conn:
+            cursor = await conn.execute(
+                "SELECT * FROM products WHERE id = ?", (product_id,)
+            )
+            row = await cursor.fetchone()
+            
+            if not row:
+                return None
+            
+            return Product(
+                id=row["id"],
+                name=row["name"],
+                price=Decimal(row["price"]),
+                description=row["description"],
+                category=row["category"],
+                stock=row["stock"],
+                is_active=bool(row["is_active"]),
+                created_at=datetime.fromisoformat(row["created_at"]),
+                updated_at=datetime.fromisoformat(row["updated_at"])
+            )
+```
+
+##### Dependency Injection
+
+```python
+# src/products/executions.py
+from .application.create_product import CreateProductUseCase
+from .application.get_products import GetProductsUseCase
+from .application.update_product import UpdateProductUseCase
+from .application.delete_product import DeleteProductUseCase
+from .infrastructure.db.repositories.product_repository import SQLiteProductRepository
+
+class ProductContainer:
+    """Container de dependencias para el módulo Products"""
+    
+    def __init__(self):
+        # Crear instancias de infraestructura
+        self.product_repository = SQLiteProductRepository()
+        
+        # Crear instancias de use cases
+        self.create_product_use_case = CreateProductUseCase(self.product_repository)
+        self.get_products_use_case = GetProductsUseCase(self.product_repository)
+        self.update_product_use_case = UpdateProductUseCase(self.product_repository)
+        self.delete_product_use_case = DeleteProductUseCase(self.product_repository)
+
+# Instancia global del container
+product_container = ProductContainer()
+```
+
+## FastAPI Framework Completo
+
+### Configuración Base de FastAPI
+
+#### Main Application
+
+```python
+# src/main.py
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from contextlib import asynccontextmanager
+import logging
+from .shared.config import settings
+from .shared.database import init_db
+from .products.infrastructure.api.products import router as products_router
+
+# Configurar logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Lifecycle events de la aplicación"""
+    # Startup
+    logger.info("🚀 Iniciando E-commerce API...")
+    await init_db()
+    logger.info("✅ Base de datos inicializada")
+    
+    yield
+    
+    # Shutdown
+    logger.info("🛑 Cerrando E-commerce API...")
+
+# Crear aplicación FastAPI
+app = FastAPI(
+    title=settings.APP_TITLE,
+    description=settings.APP_DESCRIPTION,
+    version=settings.APP_VERSION,
+    docs_url="/docs" if settings.ENVIRONMENT == "development" else None,
+    redoc_url="/redoc" if settings.ENVIRONMENT == "development" else None,
+    lifespan=lifespan
+)
+
+# Configurar middlewares
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.CORS_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Incluir routers
+app.include_router(products_router, prefix="/api/v1", tags=["Products"])
+```
+
+#### Configuration Management
+
+```python
+# src/shared/config.py
+from pydantic_settings import BaseSettings
+from typing import List
+import os
+
+class Settings(BaseSettings):
+    """Configuración de la aplicación"""
+    
+    # Información de la aplicación
+    APP_TITLE: str = "E-commerce API"
+    APP_DESCRIPTION: str = "API moderna para e-commerce con Clean Architecture"
+    APP_VERSION: str = "1.0.0"
+    
+    # Entorno
+    ENVIRONMENT: str = "development"
+    DEBUG: bool = True
+    
+    # Base de datos
+    DATABASE_URL: str = "sqlite:///./ecommerce.db"
+    
+    # Seguridad
+    SECRET_KEY: str = "your-secret-key-here"
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    
+    # CORS
+    CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:5173"]
+    
+    class Config:
+        env_file = ".env"
+        case_sensitive = True
+
+# Instancia global de configuración
+settings = Settings()
+```
+
+## Database Management
+
+### SQLite Database Setup
+
+#### Database Configuration
+
+```python
+# src/shared/database.py
+import sqlite3
+import aiosqlite
+from contextlib import asynccontextmanager
+import logging
+from .config import settings
+
+logger = logging.getLogger(__name__)
+
+@asynccontextmanager
+async def get_db_connection():
+    """Context manager para conexiones de base de datos"""
+    conn = None
+    try:
+        conn = await aiosqlite.connect(settings.DATABASE_URL.replace("sqlite:///", ""))
+        conn.row_factory = aiosqlite.Row  # Para acceso por nombre de columna
+        yield conn
+    except Exception as e:
+        logger.error(f"Error en conexión de base de datos: {e}")
+        raise
+    finally:
+        if conn:
+            await conn.close()
+
+async def init_db():
+    """Inicializa la base de datos con las tablas necesarias"""
+    async with get_db_connection() as conn:
+        # Crear tabla de productos
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS products (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                price DECIMAL(10,2) NOT NULL,
+                description TEXT NOT NULL,
+                category TEXT NOT NULL,
+                stock INTEGER NOT NULL DEFAULT 0,
+                is_active BOOLEAN NOT NULL DEFAULT 1,
+                created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        
+        # Crear tabla de usuarios
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                email TEXT UNIQUE NOT NULL,
+                password_hash TEXT NOT NULL,
+                name TEXT NOT NULL,
+                role TEXT NOT NULL DEFAULT 'customer',
+                is_active BOOLEAN NOT NULL DEFAULT 1,
+                created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        
+        await conn.commit()
+        logger.info("✅ Base de datos inicializada correctamente")
+```
+
+## Authentication & Authorization
+
+### JWT Authentication Implementation
+
+#### JWT Service
+
+```python
+# src/shared/services/jwt_service.py
+from datetime import datetime, timedelta
+from typing import Optional
+import jwt
+from passlib.context import CryptContext
+from ..config import settings
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+class JWTService:
+    """Servicio para manejo de JWT tokens"""
+    
+    @staticmethod
+    def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+        """Crea un token de acceso JWT"""
+        to_encode = data.copy()
+        
+        if expires_delta:
+            expire = datetime.utcnow() + expires_delta
+        else:
+            expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        
+        to_encode.update({"exp": expire})
+        encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+        
+        return encoded_jwt
+    
+    @staticmethod
+    def verify_token(token: str) -> Optional[dict]:
+        """Verifica y decodifica un token JWT"""
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+            return payload
+        except jwt.PyJWTError:
+            return None
+    
+    @staticmethod
+    def hash_password(password: str) -> str:
+        """Hashea una contraseña"""
+        return pwd_context.hash(password)
+    
+    @staticmethod
+    def verify_password(plain_password: str, hashed_password: str) -> bool:
+        """Verifica una contraseña contra su hash"""
+        return pwd_context.verify(plain_password, hashed_password)
+```
+
+#### Authentication Middleware
+
+```python
+# src/shared/middleware/auth.py
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from typing import Optional
+from ..services.jwt_service import JWTService
+from ..models.user import User
+
+security = HTTPBearer()
+
+async def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+) -> User:
+    """Obtiene el usuario actual desde el token JWT"""
+    
+    if not credentials:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token requerido",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    payload = JWTService.verify_token(credentials.credentials)
+    
+    if payload is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token inválido",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    user_email: str = payload.get("sub")
+    if user_email is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token inválido",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    # Obtener usuario desde repositorio
+    # user = await user_repository.get_by_email(user_email)
+    # if user is None:
+    #     raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    
+    return user
+
+def require_role(role: str):
+    """Decorator para requerir un rol específico"""
+    def role_checker(current_user: User = Depends(get_current_user)):
+        if current_user.role != role:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Permisos insuficientes"
+            )
+        return current_user
+    return role_checker
+```
+
+## API Documentation
+
+### OpenAPI Configuration
+
+```python
+# src/shared/openapi.py
+from fastapi.openapi.utils import get_openapi
+from ..main import app
+from ..config import settings
+
+def custom_openapi():
+    """Configuración personalizada de OpenAPI"""
+    if app.openapi_schema:
+        return app.openapi_schema
+    
+    openapi_schema = get_openapi(
+        title=settings.APP_TITLE,
+        version=settings.APP_VERSION,
+        description=settings.APP_DESCRIPTION,
+        routes=app.routes,
+    )
+    
+    # Agregar tags personalizados
+    openapi_schema["tags"] = [
+        {
+            "name": "Products",
+            "description": "Operaciones relacionadas con productos del e-commerce"
+        },
+        {
+            "name": "Authentication",
+            "description": "Operaciones de autenticación y autorización"
+        },
+        {
+            "name": "Orders",
+            "description": "Operaciones relacionadas con órdenes de compra"
+        }
+    ]
+    
+    # Agregar esquemas de seguridad
+    openapi_schema["components"]["securitySchemes"] = {
+        "BearerAuth": {
+            "type": "http",
+            "scheme": "bearer",
+            "bearerFormat": "JWT"
+        }
+    }
+    
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+app.openapi = custom_openapi
+```
+
+### Pydantic Schemas
+
+```python
+# src/products/infrastructure/api/schemas.py
+from pydantic import BaseModel, Field, validator
+from decimal import Decimal
+from typing import Optional
+from datetime import datetime
+
+class ProductBase(BaseModel):
+    name: str = Field(..., min_length=2, max_length=100)
+    price: Decimal = Field(..., gt=0, decimal_places=2)
+    description: str = Field(..., min_length=10, max_length=1000)
+    category: str = Field(..., min_length=2, max_length=50)
+    stock: int = Field(..., ge=0)
+
+class ProductCreate(ProductBase):
+    pass
+
+class ProductUpdate(BaseModel):
+    name: Optional[str] = Field(None, min_length=2, max_length=100)
+    price: Optional[Decimal] = Field(None, gt=0, decimal_places=2)
+    description: Optional[str] = Field(None, min_length=10, max_length=1000)
+    category: Optional[str] = Field(None, min_length=2, max_length=50)
+    stock: Optional[int] = Field(None, ge=0)
+
+class ProductResponse(ProductBase):
+    id: int
+    is_active: bool
+    created_at: datetime
+    updated_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+class ProductList(BaseModel):
+    products: list[ProductResponse]
+    total: int
+    skip: int
+    limit: int
+```
+
+## Testing Backend
+
+### Unit Testing Setup
+
+#### Test Configuration
+
+```python
+# tests/conftest.py
+import pytest
+import asyncio
+import aiosqlite
+from fastapi.testclient import TestClient
+from src.main import app
+from src.shared.database import get_db_connection
+
+@pytest.fixture(scope="session")
+def event_loop():
+    """Crear event loop para tests asíncronos"""
+    loop = asyncio.get_event_loop_policy().new_event_loop()
+    yield loop
+    loop.close()
+
+@pytest.fixture
+def client():
+    """Cliente de prueba para FastAPI"""
+    return TestClient(app)
+
+@pytest.fixture
+async def db_session():
+    """Sesión de base de datos de prueba"""
+    # Crear base de datos en memoria para tests
+    async with aiosqlite.connect(":memory:") as conn:
+        conn.row_factory = aiosqlite.Row
+        
+        # Crear tablas de prueba
+        await conn.execute("""
+            CREATE TABLE products (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                price DECIMAL(10,2) NOT NULL,
+                description TEXT NOT NULL,
+                category TEXT NOT NULL,
+                stock INTEGER NOT NULL DEFAULT 0,
+                is_active BOOLEAN NOT NULL DEFAULT 1,
+                created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        
+        await conn.commit()
+        yield conn
+```
+
+#### Product Repository Tests
+
+```python
+# tests/products/infrastructure/test_product_repository.py
+import pytest
+from decimal import Decimal
+from src.products.infrastructure.db.repositories.product_repository import SQLiteProductRepository
+from src.products.domain.models.product import Product
+
+@pytest.mark.asyncio
+class TestSQLiteProductRepository:
+    """Tests para el repositorio de productos"""
+    
+    async def test_create_product(self, db_session):
+        """Test crear un producto"""
+        repository = SQLiteProductRepository()
+        
+        product = Product(
+            id=None,
+            name="Test Product",
+            price=Decimal("99.99"),
+            description="Test description for a product",
+            category="Electronics",
+            stock=10
+        )
+        
+        created_product = await repository.create(product)
+        
+        assert created_product.id is not None
+        assert created_product.name == "Test Product"
+        assert created_product.price == Decimal("99.99")
+        assert created_product.category == "Electronics"
+        assert created_product.stock == 10
+
+    async def test_get_product_by_id(self, db_session):
+        """Test obtener producto por ID"""
+        repository = SQLiteProductRepository()
+        
+        # Crear producto primero
+        product = Product(
+            id=None,
+            name="Test Product 2",
+            price=Decimal("149.99"),
+            description="Another test description",
+            category="Books",
+            stock=5
+        )
+        
+        created_product = await repository.create(product)
+        
+        # Obtener por ID
+        retrieved_product = await repository.get_by_id(created_product.id)
+        
+        assert retrieved_product is not None
+        assert retrieved_product.id == created_product.id
+        assert retrieved_product.name == "Test Product 2"
+        assert retrieved_product.price == Decimal("149.99")
+
+    async def test_get_nonexistent_product(self, db_session):
+        """Test obtener producto que no existe"""
+        repository = SQLiteProductRepository()
+        
+        product = await repository.get_by_id(999999)
+        
+        assert product is None
+```
+
+#### Use Case Tests
+
+```python
+# tests/products/application/test_create_product.py
+import pytest
+from decimal import Decimal
+from unittest.mock import Mock, AsyncMock
+from src.products.application.create_product import CreateProductUseCase
+from src.products.domain.models.product import Product
+
+@pytest.mark.asyncio
+class TestCreateProductUseCase:
+    """Tests para el use case de crear productos"""
+    
+    async def test_create_product_success(self):
+        """Test creación exitosa de producto"""
+        # Arrange
+        mock_repository = Mock()
+        mock_repository.create = AsyncMock()
+        
+        expected_product = Product(
+            id=1,
+            name="Test Product",
+            price=Decimal("99.99"),
+            description="Test description",
+            category="Electronics",
+            stock=10
+        )
+        mock_repository.create.return_value = expected_product
+        
+        use_case = CreateProductUseCase(mock_repository)
+        
+        # Act
+        result = await use_case.execute(
+            name="Test Product",
+            price=Decimal("99.99"),
+            description="Test description",
+            category="Electronics",
+            stock=10
+        )
+        
+        # Assert
+        assert result.name == "Test Product"
+        assert result.price == Decimal("99.99")
+        assert result.category == "Electronics"
+        mock_repository.create.assert_called_once()
+
+    async def test_create_product_invalid_name(self):
+        """Test validación de nombre inválido"""
+        # Arrange
+        mock_repository = Mock()
+        use_case = CreateProductUseCase(mock_repository)
+        
+        # Act & Assert
+        with pytest.raises(ValueError, match="al menos 2 caracteres"):
+            await use_case.execute(
+                name="",
+                price=Decimal("99.99"),
+                description="Test description",
+                category="Electronics",
+                stock=10
+            )
+
+    async def test_create_product_invalid_price(self):
+        """Test validación de precio inválido"""
+        # Arrange
+        mock_repository = Mock()
+        use_case = CreateProductUseCase(mock_repository)
+        
+        # Act & Assert
+        with pytest.raises(ValueError, match="mayor a 0"):
+            await use_case.execute(
+                name="Test Product",
+                price=Decimal("-10.00"),
+                description="Test description",
+                category="Electronics",
+                stock=10
+            )
+```
+
+## Logging & Monitoring
+
+### Structured Logging
+
+```python
+# src/shared/logging.py
+import logging
+import json
+from datetime import datetime
+from typing import Dict, Any
+from .config import settings
+
+class JSONFormatter(logging.Formatter):
+    """Formatter para logs en formato JSON"""
+    
+    def format(self, record: logging.LogRecord) -> str:
+        log_entry: Dict[str, Any] = {
+            "timestamp": datetime.utcnow().isoformat(),
+            "level": record.levelname,
+            "logger": record.name,
+            "message": record.getMessage(),
+            "module": record.module,
+            "function": record.funcName,
+            "line": record.lineno
+        }
+        
+        # Agregar información adicional si existe
+        if hasattr(record, "user_id"):
+            log_entry["user_id"] = record.user_id
+        
+        if hasattr(record, "request_id"):
+            log_entry["request_id"] = record.request_id
+        
+        if hasattr(record, "execution_time"):
+            log_entry["execution_time"] = record.execution_time
+        
+        return json.dumps(log_entry, ensure_ascii=False)
+
+def setup_logging():
+    """Configura el sistema de logging"""
+    # Crear formatter
+    if settings.ENVIRONMENT == "production":
+        formatter = JSONFormatter()
+    else:
+        formatter = logging.Formatter(
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        )
+    
+    # Configurar handler
+    handler = logging.StreamHandler()
+    handler.setFormatter(formatter)
+    
+    # Configurar root logger
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.INFO if settings.ENVIRONMENT == "production" else logging.DEBUG)
+    root_logger.addHandler(handler)
+    
+    return root_logger
+```
+
+### Performance Middleware
+
+```python
+# src/shared/middleware/performance.py
+import time
+import logging
+from fastapi import Request, Response
+from starlette.middleware.base import BaseHTTPMiddleware
+
+logger = logging.getLogger(__name__)
+
+class PerformanceMiddleware(BaseHTTPMiddleware):
+    """Middleware para medir performance de requests"""
+    
+    async def dispatch(self, request: Request, call_next):
+        # Iniciar timer
+        start_time = time.time()
+        
+        # Procesar request
+        response: Response = await call_next(request)
+        
+        # Calcular tiempo de procesamiento
+        process_time = time.time() - start_time
+        
+        # Agregar header de performance
+        response.headers["X-Process-Time"] = str(process_time)
+        
+        # Log de performance
+        logger.info(
+            f"{request.method} {request.url.path}",
+            extra={
+                "method": request.method,
+                "url": str(request.url),
+                "status_code": response.status_code,
+                "execution_time": process_time,
+                "user_agent": request.headers.get("user-agent")
+            }
+        )
+        
+        # Alert para requests lentos
+        if process_time > 1.0:  # Mayor a 1 segundo
+            logger.warning(
+                f"Slow request detected: {request.method} {request.url.path}",
+                extra={
+                    "execution_time": process_time,
+                    "threshold_exceeded": True
+                }
+            )
+        
+        return response
+```
+
+## Ejercicios Prácticos
+
+### Ejercicio 1: Transformar a Clean Architecture
+
+<CardGrid>
+  <Card title="🎯 Objetivo" icon="star">
+    Refactorizar el backend legacy del proyecto e-commerce a Clean Architecture escalable
+  </Card>
+  
+  <Card title="✅ Criterios de Evaluación" icon="approve-check">
+    - Estructura Clean Architecture implementada
+    - Domain models con lógica de negocio
+    - Use cases implementados  
+    - Repository pattern implementado
+  </Card>
+</CardGrid>
+
+#### Prompts para Cursor AI
+
+```python
+# 1. Análisis del Código Legacy
+@cursor: "Analiza el código actual del backend del proyecto e-commerce y identifica los problemas de arquitectura. Sugiere una estructura Clean Architecture específica para este proyecto"
+
+# 2. Crear Estructura de Carpetas
+@cursor: "Crea la estructura completa de carpetas para el proyecto e-commerce siguiendo Clean Architecture. Incluye: src/products/domain, src/products/application, src/products/infrastructure, src/shared"
+
+# 3. Migrar Módulo Products
+@cursor: "Refactoriza el módulo Products legacy del proyecto e-commerce a Clean Architecture. Crea domain models, use cases, y repository pattern"
+```
+
+### Ejercicio 2: Implementar Feature Authentication
+
+<CardGrid>
+  <Card title="🔐 Objetivo" icon="lock">
+    Desarrollar el sistema completo de autenticación JWT para el e-commerce
+  </Card>
+  
+  <Card title="🎯 Resultado Esperado" icon="approve-check">
+    - JWT service funcional con bcrypt
+    - User repository implementado
+    - Auth use cases completos
+    - Endpoints de autenticación funcionales
+  </Card>
+</CardGrid>
+
+#### Prompts para Cursor AI
+
+```python
+# 1. Crear JWT Service
+@cursor: "Crea un servicio JWT completo para el e-commerce usando PyJWT. Incluye create_token, verify_token, hash_password, verify_password. Usa bcrypt para hashing"
+
+# 2. Implementar User Repository
+@cursor: "Crea un UserRepository para el e-commerce usando SQLite. Incluye métodos para create_user, get_user_by_email, update_user. Usa Clean Architecture"
+```
+
+### Ejercicio 3: Testing Automatizado
+
+<CardGrid>
+  <Card title="🧪 Objetivo" icon="approve-check">
+    Implementar testing completo con pytest, mocking y coverage
+  </Card>
+  
+  <Card title="📊 Métricas Objetivo" icon="chart">
+    - Coverage > 85%
+    - Unit tests para todos los use cases
+    - Integration tests para repositorios
+    - E2E tests para endpoints críticos
+  </Card>
+</CardGrid>
+
+## Métricas de Transformación
+
+| Métrica | Antes | Después | Mejora |
+|---------|--------|---------|---------|
+| **Líneas de código** | ~300 | ~2,500 | 8.3x |
+| **Funcionalidades** | Solo productos básicos | E-commerce completo | Full-featured |
+| **Testing** | 0% | 85%+ | ∞ |
+| **Performance** | Básica | Optimizada | 5x |
+| **Seguridad** | Vulnerable | JWT + validación | Seguro |
+| **Mantenibilidad** | Difícil | Modular | 10x |
+
+### Skills Desarrollados
+
+- ✅ **Clean Architecture completa**
+- ✅ **FastAPI avanzado**
+- ✅ **JWT Authentication**
+- ✅ **Testing automatizado**
+- ✅ **Performance optimization**
+- ✅ **Monitoring y logging**
+- ✅ **API Documentation**
+- ✅ **Database management**
+
+:::tip[Filosofía de Prompts Efectivos]
+**Regla de Oro**: "Sé específico, contextual y progresivo"
+
+**❌ MAL**: "Haz un endpoint"
+
+**✅ BIEN**: "Crea un endpoint POST /api/v1/products para crear productos en el e-commerce. Usa FastAPI, Pydantic, Clean Architecture y manejo de errores"
+:::
+
+## Troubleshooting de Backend Común
+
+### Problemas Frecuentes y Soluciones
+
+#### Errores de conexión a base de datos
+```bash
+# Verificar conexión SQLite
+sqlite3 ecommerce.db ".tables"
+```
+
+#### Performance issues con queries
+1. Agregar índices en columnas frecuentemente consultadas
+2. Usar query profiling para identificar bottlenecks
+3. Implementar cache con Redis para queries costosas
+
+#### JWT tokens inválidos
+```python
+# Verificar configuración de SECRET_KEY y algoritmo
+# Asegurar que el token no esté expirado
+# Validar formato del token en headers
+```
+
+:::tip[Más Ayuda]
+Para más problemas de desarrollo backend, consulta [Backend Troubleshooting](https://docs.cursor.com/troubleshooting/backend).
+:::
+
+## Próximo Paso
+
+¡Has completado el Módulo 5! Ahora dominas Clean Architecture y desarrollo backend profesional con Cursor AI. En el [Módulo 6](/modulo-6/), aprenderás integración completa frontend-backend, deployment, CI/CD y arquitecturas avanzadas para sistemas en producción.
