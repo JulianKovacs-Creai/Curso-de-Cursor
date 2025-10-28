@@ -3,7 +3,7 @@ Auth Domain Value Objects
 """
 import re
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Optional
 
 @dataclass(frozen=True)
 class UserId:
@@ -93,3 +93,25 @@ class LastName:
             raise ValueError("Last name must be at least 2 characters long")
         if len(self.value) > 50:
             raise ValueError("Last name is too long")
+
+@dataclass(frozen=True)
+class LoginCredentials:
+    """Login credentials value object"""
+    email: Email
+    password: Password
+    
+    def __post_init__(self):
+        if not self.email or not self.password:
+            raise ValueError("Email and password are required")
+
+@dataclass(frozen=True)
+class UserRegistration:
+    """User registration value object"""
+    email: Email
+    password: Password
+    first_name: Optional[FirstName] = None
+    last_name: Optional[LastName] = None
+    
+    def __post_init__(self):
+        if not self.email or not self.password:
+            raise ValueError("Email and password are required")
